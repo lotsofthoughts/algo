@@ -1,0 +1,303 @@
+algorithms:
+  - id: dfs
+    name: Depth-First Search
+    category: graph-traversal
+    leetcode: { id: 200, title: Number of Islands }
+    data_structures: [grid, graph, stack, set]
+    identification: [islands, connected components, nested traversal, all branches, recursive structure, flood fill]
+    disqualifiers: [shortest path required, level order required, weighted shortest path]
+    comparator: number
+  - id: bfs
+    name: Breadth-First Search
+    category: graph-traversal
+    leetcode: { id: 994, title: Rotting Oranges }
+    data_structures: [grid, queue]
+    identification: [minimum minutes, shortest path unweighted, level order, nearest target, spreading process]
+    disqualifiers: [weighted edges, all paths required, memory constrained]
+    comparator: number
+  - id: binary-search
+    name: Binary Search
+    category: search
+    leetcode: { id: 33, title: Search in Rotated Sorted Array }
+    data_structures: [array]
+    identification: [sorted array, rotated sorted array, logarithmic search, target lookup]
+    disqualifiers: [unsorted array, linked list random access unavailable]
+    comparator: number
+  - id: sliding-window
+    name: Sliding Window
+    category: arrays-strings
+    leetcode: { id: 3, title: Longest Substring Without Repeating Characters }
+    data_structures: [string, map, set]
+    identification: [substring, contiguous, longest window, shortest window, running frequency]
+    disqualifiers: [subsequence not substring, non contiguous, global reordering allowed]
+    comparator: number
+  - id: topological-sort
+    name: Topological Sort
+    category: graph
+    leetcode: { id: 210, title: Course Schedule II }
+    data_structures: [directed graph, queue, indegree map]
+    identification: [dependencies, prerequisites, ordering, directed acyclic graph]
+    disqualifiers: [undirected graph, shortest path required, cyclic graph has no complete ordering]
+    comparator: topo-order
+  - id: union-find
+    name: Union Find
+    category: graph
+    leetcode: { id: 684, title: Redundant Connection }
+    data_structures: [disjoint set, array, map]
+    identification: [merge groups, dynamic connectivity, undirected cycle, redundant connection]
+    disqualifiers: [directed cycle, need actual path, shortest path required]
+    comparator: exact
+  - id: dijkstra
+    name: Dijkstra Shortest Path
+    category: graph
+    leetcode: { id: 743, title: Network Delay Time }
+    data_structures: [weighted graph, heap, map]
+    identification: [weighted shortest path, non negative weights, minimum cost route]
+    disqualifiers: [negative weights, all pairs shortest path, unweighted graph where bfs is simpler]
+    comparator: number
+  - id: heap-topk
+    name: Top K Frequent
+    category: heap
+    leetcode: { id: 347, title: Top K Frequent Elements }
+    data_structures: [map, heap, array]
+    identification: [top k, most frequent, ranking, frequency count]
+    disqualifiers: [need fully sorted result, k equals all items and simple sort is fine]
+    comparator: unordered-array
+  - id: backtracking
+    name: Backtracking
+    category: search
+    leetcode: { id: 79, title: Word Search }
+    data_structures: [grid, set, recursion stack]
+    identification: [choose explore unchoose, word search, combinations, permutations, paths through grid]
+    disqualifiers: [greedy choice is sufficient, simple shortest path, no branching search]
+    comparator: boolean
+  - id: dp-1d
+    name: One Dimensional Dynamic Programming
+    category: dynamic-programming
+    leetcode: { id: 322, title: Coin Change }
+    data_structures: [array, dp table]
+    identification: [minimum coins, optimal substructure, repeated subproblems, target amount]
+    disqualifiers: [greedy canonical coin system guaranteed, no overlapping subproblems]
+    comparator: number
+  - id: add
+    name: Add
+    category: utility
+    data_structures: [number]
+    identification: [sum, add two values, plus, total]
+    disqualifiers: [subtraction, product]
+    comparator: exact
+  - id: deepmerge
+    name: Deep Merge
+    category: utility
+    data_structures: [nested map, nested array]
+    identification: [merge nested objects, combine configs, recursive merge, nested dictionaries]
+    disqualifiers: [shallow merge is enough, flat arrays only]
+    comparator: exact
+  - id: hash-map
+    name: Hash Map Lookup
+    category: arrays-hashing
+    leetcode: { id: 1, title: Two Sum }
+    data_structures: [hash map, set, array]
+    identification: [pair sum, complement lookup, frequency count, group by key, duplicates, membership check]
+    disqualifiers: [need sorted order, memory constrained, need range queries]
+    comparator: exact
+  - id: two-pointers
+    name: Two Pointers
+    category: arrays-strings
+    leetcode: { id: 15, title: 3Sum }
+    data_structures: [sorted array, string]
+    identification: [pair sum in sorted array, in place partition, converge from both ends, remove duplicates in place, palindrome check]
+    disqualifiers: [unsorted and cannot sort, need original indices, non contiguous subsequence]
+    comparator: exact
+  - id: fast-slow-pointers
+    name: Fast and Slow Pointers
+    category: linked-list
+    leetcode: { id: 141, title: Linked List Cycle }
+    data_structures: [linked list, array as graph]
+    identification: [cycle detection, middle of list, duplicate in array, palindrome list, tortoise and hare]
+    disqualifiers: [extra memory is fine and a set is simpler, doubly linked structure]
+    comparator: boolean
+  - id: prefix-sum
+    name: Prefix Sum
+    category: arrays-hashing
+    leetcode: { id: 560, title: Subarray Sum Equals K }
+    data_structures: [array, hash map]
+    identification: [subarray sum, range sum query, cumulative total, product except self, count subarrays]
+    disqualifiers: [positive numbers only so sliding window is simpler, array is updated between queries]
+    comparator: number
+  - id: kadane
+    name: Kadane Running Best
+    category: dynamic-programming
+    leetcode: { id: 53, title: Maximum Subarray }
+    data_structures: [array]
+    identification: [max subarray sum, best contiguous run, max product subarray, best ending here]
+    disqualifiers: [non contiguous elements, constraint on subarray length]
+    comparator: number
+  - id: greedy
+    name: Greedy Choice
+    category: greedy
+    leetcode: { id: 55, title: Jump Game }
+    data_structures: [array, heap]
+    identification: [reach end, minimum jumps, locally optimal choice, interval scheduling, single pass max profit, task scheduling]
+    disqualifiers: [local choice can be wrong, overlapping subproblems need dp, need all solutions]
+    comparator: exact
+  - id: monotonic-stack
+    name: Monotonic Stack
+    category: stack
+    leetcode: { id: 739, title: Daily Temperatures }
+    data_structures: [stack, deque, array]
+    identification: [next greater element, next smaller element, largest rectangle, sliding window maximum, days until warmer]
+    disqualifiers: [need random order queries, no ordering relation between elements]
+    comparator: exact
+  - id: stack
+    name: Stack
+    category: stack
+    leetcode: { id: 20, title: Valid Parentheses }
+    data_structures: [stack]
+    identification: [matching brackets, nested structure, undo history, expression evaluation, decode nested string]
+    disqualifiers: [need random access, fifo order required]
+    comparator: boolean
+  - id: linked-list
+    name: Linked List Manipulation
+    category: linked-list
+    leetcode: { id: 206, title: Reverse Linked List }
+    data_structures: [linked list, dummy head]
+    identification: [reverse list, merge sorted lists, remove node, add numbers as lists, pointer rewiring]
+    disqualifiers: [random access needed, array with indices is simpler]
+    comparator: exact
+  - id: intervals
+    name: Interval Merging
+    category: intervals
+    leetcode: { id: 56, title: Merge Intervals }
+    data_structures: [array of pairs, sort, heap]
+    identification: [overlapping intervals, merge ranges, meeting rooms, insert interval, sort by start]
+    disqualifiers: [points not ranges, intervals already disjoint]
+    comparator: exact
+  - id: tree-dfs
+    name: Tree Recursion
+    category: trees
+    leetcode: { id: 104, title: Maximum Depth of Binary Tree }
+    data_structures: [binary tree, recursion stack]
+    identification: [tree recursion, subtree property, depth height diameter, path sum, lowest common ancestor, validate bst, tree construction]
+    disqualifiers: [level by level required use bfs, graph with cycles needs visited set]
+    comparator: exact
+  - id: dp-2d
+    name: Two Dimensional Dynamic Programming
+    category: dynamic-programming
+    leetcode: { id: 62, title: Unique Paths }
+    data_structures: [2d table, grid, two strings]
+    identification: [grid paths, two string alignment, edit distance, longest common subsequence, palindromic substrings, state on two indices]
+    disqualifiers: [one dimension of state is enough, greedy works, state space too large]
+    comparator: number
+  - id: dp-knapsack
+    name: Knapsack Subset DP
+    category: dynamic-programming
+    leetcode: { id: 416, title: Partition Equal Subset Sum }
+    data_structures: [array, boolean table, sum indexed dp]
+    identification: [subset sum, choose or skip, target sum, capacity, partition into equal halves]
+    disqualifiers: [need the actual subsets listed, target is huge relative to n]
+    comparator: boolean
+  - id: two-heaps
+    name: Two Heaps
+    category: heap
+    leetcode: { id: 295, title: Find Median from Data Stream }
+    data_structures: [max heap, min heap]
+    identification: [running median, balance two halves, stream of numbers, sliding median]
+    disqualifiers: [static data so sort once, only top k needed]
+    comparator: number
+  - id: trie
+    name: Trie
+    category: strings
+    leetcode: { id: 208, title: Implement Trie (Prefix Tree) }
+    data_structures: [trie, map of children]
+    identification: [prefix search, autocomplete, dictionary of words, many word search, longest common prefix]
+    disqualifiers: [exact lookups only so a hash set is simpler, single query string]
+    comparator: exact
+  - id: bit-manipulation
+    name: Bit Manipulation
+    category: bits
+    leetcode: { id: 136, title: Single Number }
+    data_structures: [integer, bitmask]
+    identification: [xor, hamming, power of two, count set bits, find unique, bitmask state]
+    disqualifiers: [arithmetic on very large numbers, readability matters over cleverness]
+    comparator: number
+  - id: matrix
+    name: Matrix Traversal
+    category: arrays-matrix
+    leetcode: { id: 48, title: Rotate Image }
+    data_structures: [2d array]
+    identification: [rotate in place, spiral order, set zeroes, transpose, sorted matrix search, layer by layer]
+    disqualifiers: [graph traversal needed, sparse grid]
+    comparator: exact
+  - id: cyclic-sort
+    name: Cyclic Sort
+    category: arrays
+    leetcode: { id: 41, title: First Missing Positive }
+    data_structures: [array with values in 1..n]
+    identification: [missing number, duplicate in range, values map to indices, first missing positive, in place index placement]
+    disqualifiers: [values outside 1..n, input cannot be mutated]
+    comparator: number
+  - id: binary-search-answer
+    name: Binary Search on the Answer
+    category: search
+    leetcode: { id: 875, title: Koko Eating Bananas }
+    data_structures: [array, monotone predicate]
+    identification: [minimize the maximum, maximize the minimum, minimum speed, minimum capacity, within h hours, split into k parts, integer square root]
+    disqualifiers: [feasibility is not monotone, answer space is tiny so scan it, need the partition itself not its cost]
+    comparator: number
+  - id: heap
+    name: Heap Priority Queue
+    category: heap
+    leetcode: { id: 1046, title: Last Stone Weight }
+    data_structures: [heap, priority queue]
+    identification: [repeatedly take the largest, repeatedly take the smallest, k way merge, scheduling by priority, greedy with most remaining]
+    disqualifiers: [single pass min or max is enough, need arbitrary deletes use a sorted container]
+    comparator: number
+  - id: sorting
+    name: Sorting and Order Statistics
+    category: sorting
+    leetcode: { id: 912, title: Sort an Array }
+    data_structures: [array, comparator]
+    identification: [sort then scan, custom comparator, median minimizes distance, rank after sorting, merge sort, order matters only relatively]
+    disqualifiers: [linear time required and values unbounded, original order must be preserved and indices matter]
+    comparator: exact
+  - id: rolling-hash
+    name: Rolling Hash (Rabin-Karp)
+    category: strings
+    leetcode: { id: 1044, title: Longest Duplicate Substring }
+    data_structures: [string, hash set, polynomial hash]
+    identification: [repeated substring, duplicate substring, substring fingerprint, binary search on length, pattern search]
+    disqualifiers: [single exact pattern so kmp is simpler, collisions unacceptable without verification]
+    comparator: exact
+  - id: math
+    name: Math and Number Theory
+    category: math
+    leetcode: { id: 50, title: Pow(x n) }
+    data_structures: [integer]
+    identification: [digits, fast exponentiation, modulo 10^9 + 7, count good numbers, closed form, reverse an integer]
+    disqualifiers: [needs search over states, no closed form]
+    comparator: number
+  - id: simulation
+    name: Simulation and Parsing
+    category: strings
+    leetcode: { id: 6, title: Zigzag Conversion }
+    data_structures: [string, array]
+    identification: [follow the rules, parse a string, zigzag, state machine, whitespace sign digits, layout rows]
+    disqualifiers: [brute simulation too slow for constraints, a pattern collapses it to math]
+    comparator: exact
+  - id: design
+    name: Data Structure Design
+    category: design
+    leetcode: { id: 232, title: Implement Queue using Stacks }
+    data_structures: [class, hash map, stack, sorted list]
+    identification: [implement a class, design, operations sequence, rate limiter, amortized, add remove query]
+    disqualifiers: [single function input and output]
+    comparator: exact
+  - id: sql
+    name: SQL Query
+    category: database
+    leetcode: { id: 175, title: Combine Two Tables }
+    data_structures: [table, join, index]
+    identification: [table, select, join, left join, self join, null handling, where filter]
+    disqualifiers: [not a database problem]
+    comparator: unordered-array

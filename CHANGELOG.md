@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `study99` list: all 99 problems from `request.md` mapped to LeetCode ids in `registry/problems.yml`, each with
+  primary/alternative patterns and a new `uses` field (other places the technique applies). Table: `docs/study99.md`.
+- Per-problem solutions for all 99 (`src/py3/algo/leetcode/`), with test specs, brute-force oracles and SQL fixtures.
+- `algo verify` / `mise run verify:leetcode`: differential testing against cnkyrpsgl/leetcode (70 problems),
+  brute force (24), sqlite (4) and a distribution check (1). Found 3 wrong reference solutions (8, 772, 875).
+- New registry patterns: `binary-search-answer`, `heap`, `sorting`, `rolling-hash`, `math`, `simulation`, `design`, `sql`.
+- `algo p -u` (print other uses), `algo p -l study99` (filter by list), `*` marker for problems with a verified
+  solution, and search over `uses`. `algo check` now requires every `study99` problem to have a solution and spec.
+
 ## [0.1.0] - 2026-04-12
 
 ### Added

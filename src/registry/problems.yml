@@ -1,0 +1,176 @@
+# Problem index: LeetCode problem -> algorithm(s). First algorithm is the primary pattern.
+# One problem per line (flow mapping). Keywords/uses must not contain commas (titles may).
+# Optional fields: uses (other places the same technique applies), list (study99 = request.md list;
+# solved + verified in py3/algo/leetcode, see `algo verify`).
+problems:
+  - { id: 1, title: Two Sum, difficulty: easy, algorithms: [hash-map], keywords: [pair sum, complement lookup, two numbers add to target], uses: [deduplicate records by key, join two datasets on a key, detect matching transactions, cache lookups], list: study99 }
+  - { id: 2, title: Add Two Numbers, difficulty: medium, algorithms: [linked-list], keywords: [digits as linked list, carry, add numbers], uses: [big integer arithmetic, streaming digit addition, merging sorted streams with a dummy head], list: study99 }
+  - { id: 3, title: Longest Substring Without Repeating Characters, difficulty: medium, algorithms: [sliding-window, hash-map], keywords: [substring, no repeats, longest window], uses: [longest session without repeat events, network packet dedupe windows, unique-token spans in logs], list: study99 }
+  - { id: 4, title: Median of Two Sorted Arrays, difficulty: hard, algorithms: [binary-search], keywords: [two sorted arrays, median, logarithmic partition], uses: [k-th smallest across shards, percentiles over merged sorted datasets, database merge-join statistics], list: study99 }
+  - { id: 5, title: Longest Palindromic Substring, difficulty: medium, algorithms: [two-pointers, dp-2d], keywords: [palindrome, expand around center, longest substring], uses: [dna palindromic site detection, symmetry detection in sequences, manacher for linear-time palindromes], list: study99 }
+  - { id: 6, title: Zigzag Conversion, difficulty: medium, algorithms: [simulation], keywords: [zigzag pattern, rows, read line by line], uses: [text layout and rendering, interleaving data into lanes, rail-fence cipher], list: study99 }
+  - { id: 8, title: String to Integer (atoi), difficulty: medium, algorithms: [simulation], keywords: [parse integer, whitespace sign digits, clamp overflow], uses: [config and protocol parsers, input validation, tokenizers and lexers], list: study99 }
+  - { id: 9, title: Palindrome Number, difficulty: easy, algorithms: [math], keywords: [reverse digits, palindrome integer, no string conversion], uses: [digit manipulation, checksum digits, number base conversion], list: study99 }
+  - { id: 10, title: Regular Expression Matching, difficulty: hard, algorithms: [dp-2d], keywords: [pattern matching, wildcard, string dp] }
+  - { id: 11, title: Container With Most Water, difficulty: medium, algorithms: [two-pointers], keywords: [max area, two ends, shrink inward], uses: [maximize pairwise score on sorted data, pair selection under a min constraint, best window between two boundaries], list: study99 }
+  - { id: 13, title: Roman to Integer, difficulty: easy, algorithms: [hash-map], keywords: [roman numerals, subtractive notation, symbol values], uses: [parsing numeral systems, lookup-table decoding, lexical token translation], list: study99 }
+  - { id: 14, title: Longest Common Prefix, difficulty: easy, algorithms: [simulation, trie, sorting], keywords: [common prefix, shared start, compare first and last sorted], uses: [autocomplete, ip routing prefix match, grouping file paths], list: study99 }
+  - { id: 15, title: 3Sum, difficulty: medium, algorithms: [two-pointers, sorting], keywords: [triplets sum to zero, sort then two pointers, skip duplicates], uses: [k-sum feature search, finding balanced trades, closest-sum budgeting], list: study99 }
+  - { id: 17, title: Letter Combinations of a Phone Number, difficulty: medium, algorithms: [backtracking], keywords: [combinations, digits to letters] }
+  - { id: 19, title: Remove Nth Node From End of List, difficulty: medium, algorithms: [linked-list, two-pointers], keywords: [nth from end, gap between pointers] }
+  - { id: 20, title: Valid Parentheses, difficulty: easy, algorithms: [stack], keywords: [matching brackets, balanced, nested], uses: [html and xml tag validation, compiler syntax checks, undo stacks], list: study99 }
+  - { id: 21, title: Merge Two Sorted Lists, difficulty: easy, algorithms: [linked-list], keywords: [merge sorted, dummy head], uses: [merge step of merge sort, merging sorted log files, k-way merge of streams], list: study99 }
+  - { id: 22, title: Generate Parentheses, difficulty: medium, algorithms: [backtracking], keywords: [valid combinations, balanced parentheses], uses: [generating valid test inputs, grammar enumeration, catalan structure enumeration], list: study99 }
+  - { id: 23, title: Merge k Sorted Lists, difficulty: hard, algorithms: [heap-topk, linked-list], keywords: [k way merge, min heap of heads] }
+  - { id: 30, title: Substring with Concatenation of All Words, difficulty: hard, algorithms: [sliding-window, hash-map], keywords: [concatenation of all words, fixed word length, word count window], uses: [multi-keyword search in text, bag-of-words matching, detecting anagram-like token windows], list: study99 }
+  - { id: 31, title: Next Permutation, difficulty: medium, algorithms: [two-pointers], keywords: [lexicographic next, permutation order] }
+  - { id: 32, title: Longest Valid Parentheses, difficulty: hard, algorithms: [stack, dp-1d], keywords: [longest valid substring, parentheses] }
+  - { id: 33, title: Search in Rotated Sorted Array, difficulty: medium, algorithms: [binary-search], keywords: [rotated sorted array, logarithmic search] }
+  - { id: 34, title: Find First and Last Position of Element in Sorted Array, difficulty: medium, algorithms: [binary-search], keywords: [lower bound, upper bound, range of target], uses: [range queries on sorted indexes, counting occurrences in sorted data, time-range lookup in logs], list: study99 }
+  - { id: 39, title: Combination Sum, difficulty: medium, algorithms: [backtracking], keywords: [reuse elements, target sum combinations] }
+  - { id: 41, title: First Missing Positive, difficulty: hard, algorithms: [cyclic-sort], keywords: [index as hash, smallest missing positive], uses: [allocating the smallest free id, finding gaps in sequences, in-place bucket placement], list: study99 }
+  - { id: 42, title: Trapping Rain Water, difficulty: hard, algorithms: [two-pointers, monotonic-stack, prefix-sum], keywords: [water between bars, prefix max, suffix max], uses: [terrain and flood modelling, capacity between peaks, elevation map analysis], list: study99 }
+  - { id: 45, title: Jump Game II, difficulty: medium, algorithms: [greedy], keywords: [minimum jumps, reach end] }
+  - { id: 46, title: Permutations, difficulty: medium, algorithms: [backtracking], keywords: [all orderings, choose unused] }
+  - { id: 48, title: Rotate Image, difficulty: medium, algorithms: [matrix], keywords: [rotate in place, transpose then reverse] }
+  - { id: 49, title: Group Anagrams, difficulty: medium, algorithms: [hash-map], keywords: [group by sorted key, anagrams], uses: [canonical-form grouping, clustering equivalent records, dedupe by signature], list: study99 }
+  - { id: 50, title: Pow(x, n), difficulty: medium, algorithms: [math], keywords: [fast exponentiation, square and multiply, negative exponent], uses: [modular exponentiation in rsa, matrix power for recurrences, repeated squaring of transforms], list: study99 }
+  - { id: 51, title: N-Queens, difficulty: hard, algorithms: [backtracking], keywords: [place queens, constraint search] }
+  - { id: 53, title: Maximum Subarray, difficulty: medium, algorithms: [kadane, dp-1d], keywords: [max sum contiguous, running sum], uses: [best profit period, signal burst detection, max-gain segment in time series], list: study99 }
+  - { id: 54, title: Spiral Matrix, difficulty: medium, algorithms: [matrix], keywords: [spiral order, layer by layer], uses: [image and matrix traversal orders, printing layouts, peeling layers of grids], list: study99 }
+  - { id: 55, title: Jump Game, difficulty: medium, algorithms: [greedy], keywords: [can reach end, max reach] }
+  - { id: 56, title: Merge Intervals, difficulty: medium, algorithms: [intervals, sorting], keywords: [overlapping intervals, sort by start], uses: [calendar merging, coalescing ip ranges, genomic region merging], list: study99 }
+  - { id: 62, title: Unique Paths, difficulty: medium, algorithms: [dp-2d], keywords: [grid paths, count ways] }
+  - { id: 64, title: Minimum Path Sum, difficulty: medium, algorithms: [dp-2d], keywords: [grid min cost path] }
+  - { id: 69, title: Sqrt(x), difficulty: easy, algorithms: [binary-search-answer, math], keywords: [integer square root, largest r with r squared at most x], uses: [integer roots without floats, newton method, binary search on monotone functions], list: study99 }
+  - { id: 70, title: Climbing Stairs, difficulty: easy, algorithms: [dp-1d], keywords: [fibonacci, count ways], uses: [counting tilings, step-combination counting, linear recurrences], list: study99 }
+  - { id: 72, title: Edit Distance, difficulty: medium, algorithms: [dp-2d], keywords: [string transform, min operations], uses: [spell checking, dna alignment, diff tools and fuzzy search], list: study99 }
+  - { id: 73, title: Set Matrix Zeroes, difficulty: medium, algorithms: [matrix], keywords: [in place zeroes, row and column markers] }
+  - { id: 75, title: Sort Colors, difficulty: medium, algorithms: [two-pointers], keywords: [dutch national flag, in place three values] }
+  - { id: 76, title: Minimum Window Substring, difficulty: hard, algorithms: [sliding-window, hash-map], keywords: [smallest window containing all characters] }
+  - { id: 78, title: Subsets, difficulty: medium, algorithms: [backtracking], keywords: [power set, include or exclude] }
+  - { id: 79, title: Word Search, difficulty: medium, algorithms: [backtracking], keywords: [grid path spells word] }
+  - { id: 84, title: Largest Rectangle in Histogram, difficulty: hard, algorithms: [monotonic-stack], keywords: [max area bars, next smaller element], uses: [maximal rectangle in binary matrix, skyline problems, span and range queries], list: study99 }
+  - { id: 85, title: Maximal Rectangle, difficulty: hard, algorithms: [monotonic-stack, dp-2d], keywords: [largest rectangle of ones, histogram per row] }
+  - { id: 94, title: Binary Tree Inorder Traversal, difficulty: easy, algorithms: [tree-dfs], keywords: [left root right] }
+  - { id: 96, title: Unique Binary Search Trees, difficulty: medium, algorithms: [dp-1d], keywords: [catalan numbers, count bsts] }
+  - { id: 98, title: Validate Binary Search Tree, difficulty: medium, algorithms: [tree-dfs], keywords: [bst bounds, inorder sorted] }
+  - { id: 100, title: Same Tree, difficulty: easy, algorithms: [tree-dfs], keywords: [compare two trees, structural equality], uses: [dom diffing, ast comparison, merkle-style tree equality], list: study99 }
+  - { id: 101, title: Symmetric Tree, difficulty: easy, algorithms: [tree-dfs], keywords: [mirror image] }
+  - { id: 102, title: Binary Tree Level Order Traversal, difficulty: medium, algorithms: [bfs], keywords: [level by level, queue] }
+  - { id: 104, title: Maximum Depth of Binary Tree, difficulty: easy, algorithms: [tree-dfs], keywords: [height of tree] }
+  - { id: 105, title: Construct Binary Tree from Preorder and Inorder Traversal, difficulty: medium, algorithms: [tree-dfs, hash-map], keywords: [rebuild tree, index lookup] }
+  - { id: 112, title: Path Sum, difficulty: easy, algorithms: [tree-dfs], keywords: [root to leaf sum, target sum path], uses: [decision tree evaluation, budget along hierarchy paths, config inheritance checks], list: study99 }
+  - { id: 114, title: Flatten Binary Tree to Linked List, difficulty: medium, algorithms: [tree-dfs], keywords: [preorder in place] }
+  - { id: 118, title: Pascal's Triangle, difficulty: easy, algorithms: [dp-1d], keywords: [binomial coefficients, row from previous row], uses: [combinatorics nCk, probability distributions, polynomial expansion], list: study99 }
+  - { id: 121, title: Best Time to Buy and Sell Stock, difficulty: easy, algorithms: [greedy, kadane], keywords: [min so far, max profit single transaction], uses: [max drawup and drawdown, best single trade, max difference with order constraint], list: study99 }
+  - { id: 124, title: Binary Tree Maximum Path Sum, difficulty: hard, algorithms: [tree-dfs], keywords: [best path through node, post order] }
+  - { id: 128, title: Longest Consecutive Sequence, difficulty: medium, algorithms: [hash-map, union-find], keywords: [set lookup, sequence start], uses: [streak detection, finding id runs, union-find of adjacent values], list: study99 }
+  - { id: 136, title: Single Number, difficulty: easy, algorithms: [bit-manipulation], keywords: [xor, find unique], uses: [parity checks, error detection, find the odd one out in pairs], list: study99 }
+  - { id: 138, title: Copy List with Random Pointer, difficulty: medium, algorithms: [linked-list, hash-map], keywords: [deep copy, old to new map] }
+  - { id: 139, title: Word Break, difficulty: medium, algorithms: [dp-1d], keywords: [segment string, dictionary] }
+  - { id: 141, title: Linked List Cycle, difficulty: easy, algorithms: [fast-slow-pointers], keywords: [cycle detection, tortoise and hare] }
+  - { id: 142, title: Linked List Cycle II, difficulty: medium, algorithms: [fast-slow-pointers], keywords: [cycle start, floyd] }
+  - { id: 146, title: LRU Cache, difficulty: medium, algorithms: [hash-map, linked-list], keywords: [design, least recently used, ordered dict] }
+  - { id: 152, title: Maximum Product Subarray, difficulty: medium, algorithms: [kadane], keywords: [track min and max, sign flips] }
+  - { id: 153, title: Find Minimum in Rotated Sorted Array, difficulty: medium, algorithms: [binary-search], keywords: [rotation pivot] }
+  - { id: 155, title: Min Stack, difficulty: medium, algorithms: [stack], keywords: [design, constant time min] }
+  - { id: 160, title: Intersection of Two Linked Lists, difficulty: easy, algorithms: [linked-list, two-pointers], keywords: [switch heads, shared tail] }
+  - { id: 169, title: Majority Element, difficulty: easy, algorithms: [greedy, hash-map], keywords: [boyer moore voting, more than half] }
+  - { id: 175, title: Combine Two Tables, difficulty: easy, algorithms: [sql], keywords: [left join, person address, keep rows without match], uses: [reporting with optional data, outer joins in etl, enriching records], list: study99 }
+  - { id: 179, title: Largest Number, difficulty: medium, algorithms: [sorting], keywords: [custom comparator, concatenate to max, string order a plus b], uses: [custom ordering rules, smallest number by concatenation, key-ordering tricks], list: study99 }
+  - { id: 181, title: Employees Earning More Than Their Managers, difficulty: easy, algorithms: [sql], keywords: [self join, employee manager, compare salary], uses: [hierarchy queries, self-joins for parent-child data, org chart reports], list: study99 }
+  - { id: 198, title: House Robber, difficulty: medium, algorithms: [dp-1d], keywords: [no adjacent, max sum] }
+  - { id: 199, title: Binary Tree Right Side View, difficulty: medium, algorithms: [bfs, tree-dfs], keywords: [last node per level] }
+  - { id: 200, title: Number of Islands, difficulty: medium, algorithms: [dfs, bfs, union-find], keywords: [connected components, flood fill, grid], uses: [image segmentation, counting clusters, network partitions], list: study99 }
+  - { id: 202, title: Happy Number, difficulty: easy, algorithms: [fast-slow-pointers, hash-map], keywords: [digit square sum, cycle detection, ends at 1], uses: [cycle detection in iterated functions, prng period finding, detecting loops in state machines], list: study99 }
+  - { id: 206, title: Reverse Linked List, difficulty: easy, algorithms: [linked-list], keywords: [reverse pointers, iterative and recursive] }
+  - { id: 207, title: Course Schedule, difficulty: medium, algorithms: [topological-sort, dfs], keywords: [detect cycle, prerequisites], uses: [build systems, package dependency resolution, deadlock detection], list: study99 }
+  - { id: 208, title: Implement Trie (Prefix Tree), difficulty: medium, algorithms: [trie], keywords: [prefix search, insert and lookup] }
+  - { id: 210, title: Course Schedule II, difficulty: medium, algorithms: [topological-sort], keywords: [ordering, prerequisites] }
+  - { id: 215, title: Kth Largest Element in an Array, difficulty: medium, algorithms: [heap-topk], keywords: [min heap of size k, quickselect] }
+  - { id: 217, title: Contains Duplicate, difficulty: easy, algorithms: [hash-map], keywords: [any duplicate, seen set], uses: [duplicate detection in uploads, unique constraint checks, bloom filter prefilters], list: study99 }
+  - { id: 219, title: Contains Duplicate II, difficulty: easy, algorithms: [hash-map, sliding-window], keywords: [duplicate within k, last index, window of size k], uses: [rate limiting, recent-duplicate suppression, dedupe in time windows], list: study99 }
+  - { id: 221, title: Maximal Square, difficulty: medium, algorithms: [dp-2d], keywords: [largest square of ones] }
+  - { id: 226, title: Invert Binary Tree, difficulty: easy, algorithms: [tree-dfs], keywords: [swap children] }
+  - { id: 230, title: Kth Smallest Element in a BST, difficulty: medium, algorithms: [tree-dfs], keywords: [inorder, sorted order] }
+  - { id: 232, title: Implement Queue using Stacks, difficulty: easy, algorithms: [stack, design], keywords: [two stacks, amortized, fifo from lifo], uses: [amortized analysis, functional queues, undo and redo buffers], list: study99 }
+  - { id: 234, title: Palindrome Linked List, difficulty: easy, algorithms: [fast-slow-pointers, linked-list], keywords: [find middle, reverse half] }
+  - { id: 236, title: Lowest Common Ancestor of a Binary Tree, difficulty: medium, algorithms: [tree-dfs], keywords: [first split point, ancestor] }
+  - { id: 238, title: Product of Array Except Self, difficulty: medium, algorithms: [prefix-sum], keywords: [prefix and suffix products, no division] }
+  - { id: 239, title: Sliding Window Maximum, difficulty: hard, algorithms: [monotonic-stack, sliding-window], keywords: [monotonic deque, window max] }
+  - { id: 240, title: Search a 2D Matrix II, difficulty: medium, algorithms: [matrix, binary-search], keywords: [sorted rows and columns, staircase search] }
+  - { id: 242, title: Valid Anagram, difficulty: easy, algorithms: [hash-map], keywords: [same letters, character count], uses: [frequency comparison, checksum-like equality, plagiarism signatures], list: study99 }
+  - { id: 261, title: Graph Valid Tree, difficulty: medium, algorithms: [union-find, dfs, bfs], keywords: [n minus one edges, no cycle, connected], uses: [network topology validation, spanning tree checks, detecting redundant links], list: study99 }
+  - { id: 278, title: First Bad Version, difficulty: easy, algorithms: [binary-search], keywords: [first true, monotone predicate, minimize api calls], uses: [git bisect, finding regression commits, threshold search], list: study99 }
+  - { id: 279, title: Perfect Squares, difficulty: medium, algorithms: [dp-1d, bfs], keywords: [min number of squares, coin change variant] }
+  - { id: 283, title: Move Zeroes, difficulty: easy, algorithms: [two-pointers], keywords: [in place partition, stable] }
+  - { id: 287, title: Find the Duplicate Number, difficulty: medium, algorithms: [fast-slow-pointers, binary-search, cyclic-sort], keywords: [duplicate in range, no mutation], uses: [cycle detection in functional graphs, memory-light duplicate finding, pointer-chasing bugs], list: study99 }
+  - { id: 295, title: Find Median from Data Stream, difficulty: hard, algorithms: [two-heaps], keywords: [running median, balance halves] }
+  - { id: 300, title: Longest Increasing Subsequence, difficulty: medium, algorithms: [dp-1d, binary-search], keywords: [subsequence, patience sorting] }
+  - { id: 302, title: Smallest Rectangle Enclosing Black Pixels, difficulty: hard, algorithms: [binary-search, dfs, bfs], keywords: [bounding box, connected black pixels, binary search projections], uses: [image bounding boxes, object detection crops, sparse region bounds], list: study99 }
+  - { id: 322, title: Coin Change, difficulty: medium, algorithms: [dp-1d], keywords: [minimum coins, target amount] }
+  - { id: 337, title: House Robber III, difficulty: medium, algorithms: [tree-dfs, dp-1d], keywords: [rob or skip node, tree dp] }
+  - { id: 338, title: Counting Bits, difficulty: easy, algorithms: [bit-manipulation, dp-1d], keywords: [set bits for every number] }
+  - { id: 347, title: Top K Frequent Elements, difficulty: medium, algorithms: [heap-topk, hash-map], keywords: [frequency count, top k], uses: [trending topics, top talkers in networks, leaderboards], list: study99 }
+  - { id: 349, title: Intersection of Two Arrays, difficulty: easy, algorithms: [hash-map, two-pointers, sorting], keywords: [common elements, unique intersection, set intersection], uses: [finding shared users, tag overlap, joining id sets], list: study99 }
+  - { id: 354, title: Russian Doll Envelopes, difficulty: hard, algorithms: [binary-search, dp-1d, sorting], keywords: [nested envelopes, lis on second dimension, sort width asc height desc], uses: [box stacking, chain scheduling, 2d longest increasing subsequence], list: study99 }
+  - { id: 359, title: Logger Rate Limiter, difficulty: easy, algorithms: [hash-map, design], keywords: [rate limiter, print once per 10 seconds, timestamp per message], uses: [api throttling, alert dedupe, log spam suppression], list: study99 }
+  - { id: 383, title: Ransom Note, difficulty: easy, algorithms: [hash-map], keywords: [letter counts, construct from magazine], uses: [inventory sufficiency checks, resource allocation feasibility, multiset containment], list: study99 }
+  - { id: 394, title: Decode String, difficulty: medium, algorithms: [stack], keywords: [nested repeat, brackets] }
+  - { id: 410, title: Split Array Largest Sum, difficulty: hard, algorithms: [binary-search-answer, greedy, dp-2d], keywords: [minimize largest subarray sum, split into k parts, binary search on answer], uses: [load balancing across workers, book allocation, partitioning jobs fairly], list: study99 }
+  - { id: 416, title: Partition Equal Subset Sum, difficulty: medium, algorithms: [dp-knapsack], keywords: [subset sum, half of total], uses: [fair division, load balancing two machines, budget allocation], list: study99 }
+  - { id: 419, title: Battleships in a Board, difficulty: medium, algorithms: [matrix, dfs], keywords: [count ships, top left cell, one pass], uses: [counting objects in grids, connected component shortcuts, image blob counting], list: study99 }
+  - { id: 437, title: Path Sum III, difficulty: medium, algorithms: [tree-dfs, prefix-sum], keywords: [paths with target sum, any start] }
+  - { id: 438, title: Find All Anagrams in a String, difficulty: medium, algorithms: [sliding-window, hash-map], keywords: [fixed window, frequency match] }
+  - { id: 448, title: Find All Numbers Disappeared in an Array, difficulty: easy, algorithms: [cyclic-sort], keywords: [missing numbers in range] }
+  - { id: 462, title: Minimum Moves to Equal Array Elements II, difficulty: medium, algorithms: [sorting, math], keywords: [median minimizes distance, plus or minus one moves], uses: [facility location on a line, minimizing absolute deviation, meeting point problems], list: study99 }
+  - { id: 485, title: Max Consecutive Ones, difficulty: easy, algorithms: [sliding-window], keywords: [longest run of ones, reset on zero], uses: [uptime streaks, longest success run, run-length encoding], list: study99 }
+  - { id: 494, title: Target Sum, difficulty: medium, algorithms: [dp-knapsack, backtracking], keywords: [assign plus or minus, count ways] }
+  - { id: 509, title: Fibonacci Number, difficulty: easy, algorithms: [dp-1d, math], keywords: [fibonacci, memoization, rolling variables], uses: [dp warmup, matrix exponentiation, recurrence modelling], list: study99 }
+  - { id: 528, title: Random Pick with Weight, difficulty: medium, algorithms: [prefix-sum, binary-search, design], keywords: [weighted random, cumulative weights, bisect], uses: [load balancer weighting, a/b test traffic splits, weighted sampling in games], list: study99 }
+  - { id: 543, title: Diameter of Binary Tree, difficulty: easy, algorithms: [tree-dfs], keywords: [longest path, post order] }
+  - { id: 547, title: Number of Provinces, difficulty: medium, algorithms: [union-find, dfs, bfs], keywords: [connected components, adjacency matrix, friend circles], uses: [social graph clusters, network segmentation, grouping related accounts], list: study99 }
+  - { id: 560, title: Subarray Sum Equals K, difficulty: medium, algorithms: [prefix-sum, hash-map], keywords: [count subarrays, running sum lookup], uses: [counting time windows with target totals, anomaly windows, range-sum analytics], list: study99 }
+  - { id: 584, title: Find Customer Referee, difficulty: easy, algorithms: [sql], keywords: [null handling, not equal, referee id], uses: [three-valued logic pitfalls, filtering nullable columns, data quality checks], list: study99 }
+  - { id: 621, title: Task Scheduler, difficulty: medium, algorithms: [greedy, heap], keywords: [cooldown, most frequent task], uses: [cpu scheduling with cooldowns, rate-limited job queues, round-robin planning], list: study99 }
+  - { id: 647, title: Palindromic Substrings, difficulty: medium, algorithms: [dp-2d, two-pointers], keywords: [count palindromes, expand around center] }
+  - { id: 684, title: Redundant Connection, difficulty: medium, algorithms: [union-find], keywords: [undirected cycle, extra edge] }
+  - { id: 715, title: Range Module, difficulty: hard, algorithms: [intervals, binary-search, design], keywords: [track ranges, add remove query, half open intervals], uses: [memory allocators, ip range tracking, calendar availability], list: study99 }
+  - { id: 739, title: Daily Temperatures, difficulty: medium, algorithms: [monotonic-stack], keywords: [next greater element, days until warmer], uses: [stock span, next price increase, event lookahead], list: study99 }
+  - { id: 743, title: Network Delay Time, difficulty: medium, algorithms: [dijkstra], keywords: [weighted shortest path, signal propagation] }
+  - { id: 759, title: Employee Free Time, difficulty: hard, algorithms: [intervals, heap, sorting], keywords: [common free time, merge busy intervals, gaps], uses: [meeting scheduling, resource availability, maintenance windows], list: study99 }
+  - { id: 763, title: Partition Labels, difficulty: medium, algorithms: [greedy], keywords: [last occurrence, split into parts] }
+  - { id: 772, title: Basic Calculator III, difficulty: hard, algorithms: [stack], keywords: [expression evaluation, parentheses, operator precedence], uses: [formula engines, interpreters, config expression evaluation], list: study99 }
+  - { id: 875, title: Koko Eating Bananas, difficulty: medium, algorithms: [binary-search-answer], keywords: [minimum speed, hours limit, binary search on answer], uses: [capacity planning, minimum throughput for a deadline, shipping capacity], list: study99 }
+  - { id: 876, title: Middle of the Linked List, difficulty: easy, algorithms: [fast-slow-pointers], keywords: [middle node, tortoise and hare], uses: [splitting lists for merge sort, palindrome list checks, single-pass midpoint], list: study99 }
+  - { id: 904, title: Fruit Into Baskets, difficulty: medium, algorithms: [sliding-window, hash-map], keywords: [at most two distinct, longest window], uses: [longest window with k distinct values, session analysis, cache with k types], list: study99 }
+  - { id: 912, title: Sort an Array, difficulty: medium, algorithms: [sorting], keywords: [merge sort, heap sort, n log n], uses: [external sorting, stable multi-key sorting, preprocessing for binary search], list: study99 }
+  - { id: 994, title: Rotting Oranges, difficulty: medium, algorithms: [bfs], keywords: [minimum minutes, multi source spreading, shortest path unweighted] }
+  - { id: 1044, title: Longest Duplicate Substring, difficulty: hard, algorithms: [rolling-hash, binary-search], keywords: [repeated substring, rabin karp, binary search on length], uses: [plagiarism detection, dna repeat finding, data deduplication], list: study99 }
+  - { id: 1046, title: Last Stone Weight, difficulty: easy, algorithms: [heap], keywords: [max heap, smash two largest], uses: [priority scheduling, event simulation, huffman-style merges], list: study99 }
+  - { id: 1048, title: Longest String Chain, difficulty: medium, algorithms: [dp-1d, hash-map, sorting], keywords: [word chain, add one letter, sort by length], uses: [edit-step chains, version lineage, longest path in dag], list: study99 }
+  - { id: 1143, title: Longest Common Subsequence, difficulty: medium, algorithms: [dp-2d], keywords: [lcs, two strings, subsequence], uses: [diff and patch, dna comparison, version-control merges], list: study99 }
+  - { id: 1218, title: Longest Arithmetic Subsequence of Given Difference, difficulty: medium, algorithms: [dp-1d, hash-map], keywords: [fixed difference, subsequence, best ending at value], uses: [trend detection, sequence pattern mining, dp keyed by value], list: study99 }
+  - { id: 1405, title: Longest Happy String, difficulty: medium, algorithms: [greedy, heap], keywords: [no three in a row, most remaining letter, a b c counts], uses: [task interleaving without repeats, reorganize string, playlist shuffling], list: study99 }
+  - { id: 1448, title: Count Good Nodes in Binary Tree, difficulty: medium, algorithms: [tree-dfs], keywords: [max on path, good nodes, root to node], uses: [path maxima in hierarchies, permission inheritance, record-breaking along paths], list: study99 }
+  - { id: 1480, title: Running Sum of 1d Array, difficulty: easy, algorithms: [prefix-sum], keywords: [cumulative sum, running total], uses: [range-sum queries, cumulative metrics, weighted sampling tables], list: study99 }
+  - { id: 1514, title: Path with Maximum Probability, difficulty: medium, algorithms: [dijkstra], keywords: [max product path, probability edges, max heap], uses: [most reliable network route, risk-minimizing paths, log-transform to shortest path], list: study99 }
+  - { id: 1757, title: Recyclable and Low Fat Products, difficulty: easy, algorithms: [sql], keywords: [where filter, and condition, enum flags], uses: [simple filtering, product catalog queries, feature flags], list: study99 }
+  - { id: 1911, title: Maximum Alternating Subsequence Sum, difficulty: medium, algorithms: [dp-1d, greedy], keywords: [alternating sum, even odd state, subsequence], uses: [stock trading with unlimited trades, state-machine dp, signal peaks and troughs], list: study99 }
+  - { id: 1922, title: Count Good Numbers, difficulty: medium, algorithms: [math], keywords: [fast modular power, even and prime digits, count strings], uses: [counting with independent choices, modular arithmetic, combinatorics mod p], list: study99 }
+  - { id: 1929, title: Concatenation of Array, difficulty: easy, algorithms: [simulation], keywords: [nums plus nums, repeat array], uses: [circular buffer unrolling, wrap-around problems, doubling arrays for rotations], list: study99 }
+  - { id: 1944, title: Number of Visible People in a Queue, difficulty: hard, algorithms: [monotonic-stack], keywords: [visible to the right, taller blocks view, pop shorter], uses: [line-of-sight problems, skyline visibility, next greater with counts], list: study99 }
+  - { id: 2089, title: Find Target Indices After Sorting Array, difficulty: easy, algorithms: [sorting, binary-search], keywords: [indices after sort, count less than target], uses: [rank queries, counting sort, positional statistics], list: study99 }
+  - { id: 2235, title: Add Two Integers, difficulty: easy, algorithms: [math], keywords: [add two numbers, sum], uses: [warmup, arithmetic utilities, overflow awareness], list: study99 }
+  - { id: 2337, title: Move Pieces to Obtain a String, difficulty: medium, algorithms: [two-pointers], keywords: [l moves left, r moves right, blanks], uses: [token movement puzzles, sliding-piece feasibility, relative-order invariants], list: study99 }
+  - { id: 2747, title: Count Zero Request Servers, difficulty: medium, algorithms: [sliding-window, sorting], keywords: [offline queries, time window, servers with no requests], uses: [monitoring idle hosts, offline query processing, time-window aggregation], list: study99 }
+  - { id: 2812, title: Find the Safest Path in a Grid, difficulty: medium, algorithms: [bfs, dijkstra, binary-search-answer], keywords: [multi source bfs, maximize minimum distance, safeness factor], uses: [robot path planning away from hazards, evacuation routing, bottleneck paths], list: study99 }
+  - { id: 2913, title: Subarrays Distinct Element Sum of Squares I, difficulty: easy, algorithms: [hash-map], keywords: [distinct count, all subarrays, sum of squares], uses: [distinct-count analytics, window diversity metrics, brute-force baselines], list: study99 }
+  - { id: 3026, title: Maximum Good Subarray Sum, difficulty: medium, algorithms: [prefix-sum, hash-map], keywords: [first and last differ by k, max subarray sum, min prefix per value], uses: [best segment between matching events, pair-anchored range sums, prefix-min lookups], list: study99 }
+  - { id: 3644, title: Maximum K to Sort a Permutation, difficulty: medium, algorithms: [bit-manipulation], keywords: [bitwise and, swap condition, misplaced values], uses: [bitmask invariants, permission masks, feasibility via common bits], list: study99 }
+  - { id: 3736, title: Minimum Moves to Equal Array Elements III, difficulty: easy, algorithms: [math], keywords: [raise to max, increment one element, sum of differences], uses: [levelling resources, equalizing inventory, budget top-ups], list: study99 }
+  - { id: 3749, title: Evaluate Valid Expressions, difficulty: hard, algorithms: [stack], keywords: [nested op calls, add sub mul div, prefix expression], uses: [s-expression interpreters, ast evaluation, function-call parsers], list: study99 }
+  - { id: 3863, title: Minimum Operations to Sort a String, difficulty: medium, algorithms: [greedy], keywords: [sort a substring, not the entire string, case analysis], uses: [answer bounded by a small constant, invariant-based reasoning, operation counting puzzles], list: study99 }
+  - { id: 3886, title: Sum of Sortable Integers, difficulty: hard, algorithms: [sorting, prefix-sum], keywords: [rotate blocks, divisors of n, sortable k], uses: [block-wise sortedness checks, rotation detection, divisor enumeration], list: study99 }
+  - { id: 3970, title: Shortest Path With At Most K Consecutive Identical Characters, difficulty: medium, algorithms: [dijkstra, bfs], keywords: [state expanded dijkstra, run length constraint, labels on nodes], uses: [routing with constraints, fuel or streak limited paths, state-space search], list: study99 }

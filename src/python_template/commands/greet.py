@@ -18,12 +18,13 @@ class GreetCommand(BaseCommand):
     name = "greet"
     help = "Print a personalised greeting"
 
-    def execute(self, *, name: str = "world", loud: bool = False) -> CommandResult:
+    def execute(self, *, name: str = "world", loud: bool = False, **_kwargs: Any) -> CommandResult:
         """Execute the greet command.
 
         Args:
             name: Name to greet.
             loud: Whether to shout (uppercase).
+            **_kwargs: Other parsed CLI arguments (ignored; keeps the BaseCommand signature).
 
         Returns:
             CommandResult with the greeting message.

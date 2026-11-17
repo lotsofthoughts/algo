@@ -1,0 +1,12 @@
+targets:
+  leetcode-1: { algorithm: hash-map, comparator: unordered-array, input: cases/leetcode-1/case-1.input.json, expected: cases/leetcode-1/case-1.expected.json }
+  leetcode-200: { algorithm: dfs, comparator: number, input: cases/leetcode-200/case-1.input.json, expected: cases/leetcode-200/case-1.expected.json }
+  leetcode-994: { algorithm: bfs, comparator: number, input: cases/leetcode-994/case-1.input.json, expected: cases/leetcode-994/case-1.expected.json }
+  leetcode-33: { algorithm: binary-search, comparator: number, input: cases/leetcode-33/case-1.input.json, expected: cases/leetcode-33/case-1.expected.json }
+  leetcode-3: { algorithm: sliding-window, comparator: number, input: cases/leetcode-3/case-1.input.json, expected: cases/leetcode-3/case-1.expected.json }
+  leetcode-210: { algorithm: topological-sort, comparator: topo-order, input: cases/leetcode-210/case-1.input.json, expected: cases/leetcode-210/case-1.expected.json }
+  leetcode-684: { algorithm: union-find, comparator: exact, input: cases/leetcode-684/case-1.input.json, expected: cases/leetcode-684/case-1.expected.json }
+  leetcode-743: { algorithm: dijkstra, comparator: number, input: cases/leetcode-743/case-1.input.json, expected: cases/leetcode-743/case-1.expected.json }
+  leetcode-347: { algorithm: heap-topk, comparator: unordered-array, input: cases/leetcode-347/case-1.input.json, expected: cases/leetcode-347/case-1.expected.json }
+  leetcode-79: { algorithm: backtracking, comparator: boolean, input: cases/leetcode-79/case-1.input.json, expected: cases/leetcode-79/case-1.expected.json }
+  leetcode-322: { algorithm: dp-1d, comparator: number, input: cases/leetcode-322/case-1.input.json, expected: cases/leetcode-322/case-1.expected.json }
