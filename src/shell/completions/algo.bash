@@ -61,6 +61,7 @@ _algo_complete() {
   case "$sub" in
     search|s|generate|g|inputs|i) COMPREPLY=( $(compgen -W "$(_algo_cands algos)" -- "$cur") ) ;;
     pipe)                         COMPREPLY=( $(compgen -W "$(_algo_cands runnable)" -- "$cur") ) ;;
+    shapes|sh)                    COMPREPLY=( $(compgen -W "$(_algo_cands runnable)" -- "$cur") ) ;;
     judge)                        COMPREPLY=( $(compgen -W "$(_algo_cands judged)" -- "$cur") ) ;;
     run|r)
       # An algorithm starts the first stage and follows every `then`; otherwise offer `then`.

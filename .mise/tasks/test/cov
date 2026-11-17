@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #MISE description="Run the test suite with coverage reporting"
 set -euo pipefail
-python -m pytest tests/ \
+uv run python -m pytest tests/ \
   --cov=src/python_template \
   --cov-report=term-missing \
   --cov-report=html:htmlcov \
