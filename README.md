@@ -80,17 +80,30 @@ Five complete walkthroughs (topological sort, Dijkstra, top-k, flood fill, coin-
 | --- | --- | --- |
 | `p` | Problem → algorithms. `*` = verified solution. `-u` other uses, `-l study99`, `-a ALGO`, `-j` | `.a p 875 -u` |
 | `s` | Find algorithms. `--id` symptoms, `--disqualifier` constraints, `-p` example problems, `-j` | `.a s bfs -p` |
-| `g` | Write the importable library `$TMPDIR/<id>.py` | `.a g dijkstra` |
+| `g` | Write the importable library `$TMPDIR/<id>.py` | `.a g dijkstra` · `.a g 2812` |
 | `i` | Write `$TMPDIR/inputs.py` that calls the library on your values | `.a i 1,2,5 11 coin-change` |
 | `r` | Run in-process, no files; `then` chains, `_` = previous output | `.a r top-k 5,5,1 1 then coin-change _ 11` |
-| `sh` | Input fields and types per algorithm | `.a sh` |
+| `sh` | Input fields and types per algorithm, or for one target | `.a sh` · `.a sh 875` |
 | `pipe` / `assert` / `judge` | JSON in → JSON out, compare, judge a sample | `.a judge leetcode-322` |
 | `verify` | Differential-test the 99 study-list solutions | `.a verify --fetch` |
 | `check` | Validate registry ↔ problems ↔ solvers ↔ schemas ↔ cases | `.a check` |
 
+**Targets** are algorithms (`dijkstra`), solver keys (`leetcode-743`), or any of the 99 solved problems by number,
+`lc-N` or title (`875`, `lc-875`, `koko`, `"trapping rain water"`). 36 of 38 algorithms and 106 of 171 indexed problems run.
+
+```console
+$ .a r 875 3,6,7,11 8                          # Koko Eating Bananas
+4
+$ .a r lc-2 2,4,3 5,6,4                        # linked lists in, linked list out
+[7, 0, 8]
+$ .a r 112 5,4,8,11,null,13,4,7,2,null,null,null,1 22   # a tree in level order
+true
+```
+
 **Input shorthand** (full table in [API.md §6](docs/API.md#6-schemas-and-input-shorthand)):
-`1,2,5` and `1..5` lists · `abcabcbb` strings · `11000/00100` grids · `1-0,2-0` edges · `2-1:1` weighted edges ·
-`rand:8:0-9`, `rand:4x5` random inputs · `[1, 2]`, `[k: v]` literals · `name=value` by field · `_` previous stage.
+`1,2,5` and `1..5` lists · `eat,tea` word lists · `abcabcbb` strings · `11000/00100` grids · `1-0,2-0` edges ·
+`2-1:1` weighted edges · `3,9,null,7` trees · `rand:8:0-9`, `rand:4x5` random inputs · `[1, 2]`, `[k: v]` literals ·
+`name=value` by field · `_` previous stage.
 
 ---
 
@@ -126,7 +139,7 @@ registry/problems.yml     problem → patterns (+ keywords, uses, list)         
 py3/algo/solutions.py     one solver per pattern: f(dict) -> JSON              ← algo g / i / r / pipe
 py3/algo/shorthand.py     input schema per solver + shorthand parser
 cases/<target>/           sample input + expected output                       ← algo judge
-py3/algo/leetcode/        per-problem solutions, test specs, verifier          ← algo verify
+py3/algo/leetcode/        per-problem solutions (runnable as lc-N), specs, verifier  ← algo verify / r 875
 ```
 
 Adding an algorithm, problem, solver or schema is a few lines each:

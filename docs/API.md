@@ -38,8 +38,17 @@ algo i 2,7,11,15 9 hash-map && python3 $TMPDIR/inputs.py     # -> [0, 1]
 **How an algorithm finds its solver.** The registry entry's `leetcode: { id: N, ... }` field decides it:
 the solver key is `leetcode-N`. An entry with no `leetcode` field uses its own id (`add`, `deepmerge`).
 One algorithm therefore maps to exactly one solver — the solver for its *representative* problem.
-(`bfs` → `leetcode-994`, even though 5 problems use BFS.) An entry whose solver key is not in
-`SOLVERS` is still searchable; `generate`/`inputs`/`run` report "in the registry but has no solver yet".
+(`bfs` → `leetcode-994`, even though 5 problems use BFS.)
+
+**Problems are targets too.** Every solved study-list problem N is runnable as `lc-N` (§5.1), so
+`.a r 875 3,6,7,11 8`, `.a g "trapping rain water"` and `.a i -a lc-2 2,4,3 5,6,4` all work. An algorithm with no
+`SOLVERS` entry runs its representative problem's solution, else the lowest-numbered solved problem whose primary
+pattern it is (`.a sh tree-dfs` → `runs: lc-100 Same Tree`). Only `two-heaps` and `trie` still report
+"in the registry but has no solver yet".
+
+Name resolution order: solver key (`leetcode-200`) → problem number (`lc-875` is always the per-problem
+solution; a bare `200` prefers an existing `leetcode-200` solver) → exact algorithm id → problem title (exact, or
+a unique prefix such as `koko`) → fuzzy algorithm match. Multi-word names need quotes in `run`/`inputs`.
 
 ---
 
@@ -54,10 +63,10 @@ One algorithm therefore maps to exactly one solver — the solver for its *repre
 | `search` (`s`) | Find **algorithms**. Plain `id  name` list; `-j` full JSON; `-p` also list example problems; `--top N`. | `.a s graph` · `.a s bfs -p` |
 | | Search only by symptoms / only by disqualifiers. | `.a s --id "shortest path"` · `.a s --disqualifier "negative weights"` |
 | `problems` (`p`) | Find **problems** by title, number, keywords or uses → algorithms. `-a ALGO` filters; `-l study99` limits to a list; `-u` prints other uses; `-j` JSON; no query lists all. `*` after the id = verified solution exists. | `.a p "two sum"` · `.a p 200` · `.a p -a dijkstra` · `.a p 875 -u` |
-| `generate` (`g`) | Write the algorithm library `$TMPDIR/<id>.py` (importable; also runnable on its sample). `-o DIR`. | `.a g bfs` |
-| `inputs` (`i`) | Write `$TMPDIR/inputs.py` that imports the library and calls `solve(...)`. Generates the library first if missing (never overwrites). Algorithm = last bare word or `-a`. | `.a i 1 2 add` · `.a i [a: [1]] [b: [2]] -a deepmerge` |
-| `run` (`r`) | Run in-process with shorthand input, no files. Chain stages with `then`; `_` = previous output. | `.a r topo 4 1-0,2-0 then binary-search _ target=2` |
-| `shapes` (`sh`) | Show each solver's input fields and types. | `.a sh` |
+| `generate` (`g`) | Write the algorithm library `$TMPDIR/<id>.py` (importable; also runnable on its sample). A problem target writes a standalone `lc<N>_<name>.py` with its helpers and node types inlined. `-o DIR`. | `.a g bfs` · `.a g 2812` |
+| `inputs` (`i`) | Write `$TMPDIR/inputs.py` that imports the library and calls `solve(...)`. Generates the library first if missing (never overwrites). Target = last bare word or `-a` (a bare number at the end is a value: use `lc-N` or `-a N`). | `.a i 1 2 add` · `.a i -a 875 3,6,7,11 8` |
+| `run` (`r`) | Run in-process with shorthand input, no files. Chain stages with `then`; `_` = previous output. A solver error prints one line and exits 1. | `.a r topo 4 1-0,2-0 then binary-search _ target=2` · `.a r 22 3 then 14 _` |
+| `shapes` (`sh`) | Show each solver's input fields and types; with a name, one target's fields, sample, and which problem it runs. | `.a sh` · `.a sh 875` |
 | `pipe` | JSON in → solver → JSON out, for pipelines. Input from `--input FILE`, piped stdin, or the sample case when stdin is a terminal. | `.a pipe leetcode-347 -i in.json \| .a assert --expected out.json --comparator unordered-array` |
 | `judge` | Run a target's sample through its solver and compare to the expected file. | `.a judge leetcode-200` |
 | `assert` | Compare JSON from stdin/`--actual` against `--expected` with a comparator. | see `pipe` |
@@ -220,6 +229,15 @@ Reference solutions are `exec`'d with LeetCode's implicit imports (`List`, `coll
 our `ListNode`/`TreeNode`/`Interval`. Three are wrong and are bypassed with `bad_ref` (8, 772, 875 —
 listed in `docs/study99.md`); a mutated solution is caught within the first few cases, so a pass is meaningful.
 
+**Running them (`lc-N` targets).** `algo/leetcode/runnable.py` turns each solution into a target. Its schema comes
+from the signature: parameter names are the fields, and annotation strings map to shorthand types (`list[int]` →
+`ints`, `list[str]` → `strs`, `list[float]` → `floats`, `list[list[int]]` → `igrid`, `list[list[str]]` → `cgrid`,
+`ListNode | None` → `ll`, `TreeNode | None` → `tree`, anything else → `any`). The sample is the first catalog hand case.
+Adapters cover the other shapes: design classes take `ops params` (LeetCode's transcript format), 528 takes
+`w picks seed`, 278 takes `n bad`, and SQL problems take `query` and run on the example tables in sqlite. The same
+adapter code is copied into generated libraries, so `algo r lc-N` and `python3 lc<N>_*.py` behave the same.
+`algo check` and `tests/test_problem_targets.py` run every target's sample and every generated library.
+
 **To add a problem:** solution in `solutions.py` → `Spec` in `catalog.py` (examples + `gen`; an `oracle` if
 the reference repo lacks the id, i.e. most ids > 1263) → line in `problems.yml` → `algo check` → `algo verify <id>`.
 
@@ -242,6 +260,10 @@ SCHEMAS = { ..., "leetcode-1": {"nums": "ints", "target": "int"} }
 | `cgrid` / `igrid` | `11000/11000/00100` (chars) · `2,1,1/1,1,0` (ints) | `rand:4x5[:alphabet]` |
 | `edges` | `1-2,1-3,2-3` · path `1-2-3-4` | `rand:6:8` (nodes, edges; acyclic) |
 | `wedges` | `2-1:1,2-3:1` (`u-v:weight`) | `rand:6:8` |
+| `strs` | `eat,tea,tan` | — |
+| `floats` | `0.5,0.5,0.2` | — |
+| `ll` | `2,4,3` (passed to the solution as a linked list) | as `ints` |
+| `tree` | `3,9,20,null,null,15,7` (level order, `null` = no node) | — |
 | `any` | `5` · `abc` · `[1, 2]` · `[a: [1, 2], b: [3]]` | — |
 
 **Literal syntax** works for any type: `[...]` is a list, `[k: v, ...]` or `{k: v}` a dict, quotes force a
@@ -383,16 +405,15 @@ but only `algo g <id>` followed by running the generated file proves the file is
 
 ## 9. Gaps
 
-**Two kinds of "solved".** The 99 `study99` problems all have verified per-problem solutions (§5.1), but those are
-not wired into `generate`/`inputs`/`run`, which still go through the per-algorithm `SOLVERS` below. Promoting a
-per-problem solution to a runnable target needs a `SCHEMAS` entry and a dict-in adapter.
+**Solver coverage.** 36 of 38 algorithms are runnable: 13 through a per-algorithm solver, the rest through a
+per-problem target (§1, §5.1). 106 of the 171 indexed problems are runnable by number: the 99 study-list problems
+plus 33, 79, 210, 684, 743 and 994 via `SOLVERS`. Everything else is *findable* (`.a p`, `.a s`) but not runnable.
+Algorithms with **no runner**: `two-heaps`, `trie` (no solved problem uses either as its primary pattern).
+Solving one more problem in `algo/leetcode/solutions.py` makes it, and any pattern it is primary for, runnable.
 
-**Solver coverage.** 13 of 38 algorithms have a per-algorithm solver, and only
-11 of the 171 indexed problems are runnable by number (1, 3, 33, 79, 200, 210, 322, 347, 684, 743, 994).
-Everything else is *findable* (`.a p`, `.a s`) but `generate`/`inputs`/`run` will say "no solver yet".
-Algorithms with **no solver**: `two-pointers`, `fast-slow-pointers`, `prefix-sum`, `kadane`, `greedy`, `monotonic-stack`, `stack`, `linked-list`, `intervals`, `tree-dfs`, `dp-2d`, `dp-knapsack`, `two-heaps`, `trie`, `bit-manipulation`, `matrix`, `cyclic-sort`, `binary-search-answer`, `heap`, `sorting`, `rolling-hash`, `math`, `simulation`, `design`, `sql`.
-Because one algorithm has one solver, adding the representative problem's solver is the cheapest way to
-make a pattern runnable.
+**Problem-target limits.** Field types come from annotation strings, so a new solution needs a mapped annotation
+(or gets `any`, which takes literal syntax). 759's `list[list[list[int]]]` input is `any`. Random (`rand:`) input
+exists only for the types that had it before (`ints`/`ll`, `str`, grids, edges).
 
 **Mapping is coarse in places.**
 - `tree-dfs` bundles 14 problems with different shapes (traversal, BST validation, path sums,

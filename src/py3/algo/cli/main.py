@@ -8,7 +8,8 @@ Subcommands (full spec in docs/API.md §2):
     generate (g)   write the importable library $ALGO_TMP/<id>.py
     inputs   (i)   write $ALGO_TMP/inputs.py that calls the library on shorthand values
     run      (r)   run in-process; chain stages with `then`, `_` = previous output
-    shapes   (sh)  input fields and types per solver
+                   (targets: an algorithm, a solver key, or a problem: 875 / lc-875 / "koko")
+    shapes   (sh)  input fields and types per solver (`algo sh 875` for one problem)
     pipe / assert / judge / targets   JSON in -> JSON out, compare, judge samples
     verify         differential-test the per-problem solutions (algo.leetcode.verify)
     check          cross-validate registry, problems, solvers, schemas and cases
@@ -24,10 +25,15 @@ import json
 import os
 import pathlib
 import sys
-from typing import Any, NoReturn
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from algo.judge.comparators import COMPARATORS
 from algo.solutions import SOLVERS
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from algo.leetcode.runnable import ProblemTarget
 
 Item = dict[str, Any]  # a registry entry or a problem row
 
@@ -137,7 +143,7 @@ def read_json(path: str | None) -> Any:
 
 def cmd_pipe(args: argparse.Namespace) -> None:
     """JSON in (--input, stdin, or the sample case) -> solver -> JSON out, for `| algo assert`."""
-    _, target = pick(args.target)
+    item, target = pick(args.target)
     if args.input:
         data = read_json(args.input)
     else:
@@ -147,7 +153,7 @@ def cmd_pipe(args: argparse.Namespace) -> None:
         else:
             data = sample_for(target)
             print("(no --input and no piped stdin: using the sample case)", file=sys.stderr)
-    print(json.dumps(SOLVERS[target](data), default=repr))
+    print(json.dumps(run_solver(item, target, data), default=repr))
 
 
 def load_problems() -> list[Item]:
@@ -324,7 +330,41 @@ def sample_for(target: str) -> Any:
 
     if target in TARGETS:
         return json.loads(TARGETS[target][1].read_text())
+    if target.startswith("lc-"):
+        from algo.leetcode import runnable
+
+        return runnable.sample(target)
     return SAMPLES[target]
+
+
+def solver_for(target: str) -> Callable[[dict], Any]:
+    """The callable behind a target: a SOLVERS entry, or a per-problem solution (lc-N)."""
+    if target in SOLVERS:
+        return SOLVERS[target]
+    from algo.leetcode import runnable
+
+    return lambda data: runnable.run(target, data)
+
+
+def run_solver(item: Item, target: str, data: dict) -> Any:
+    """Call a target's solver; report a crash on bad input as one line instead of a traceback."""
+    try:
+        return solver_for(target)(data)
+    except Exception as e:
+        shown = json.dumps(data, default=repr)[:200]
+        print(f"{item['id']}: {type(e).__name__}: {e}\n  input: {shown}", file=sys.stderr)
+        raise SystemExit(1) from e
+
+
+def schema_for(target: str) -> dict[str, str]:
+    """Ordered field -> shorthand type map for a target."""
+    from algo.shorthand import SCHEMAS
+
+    if target in SCHEMAS:
+        return SCHEMAS[target]
+    from algo.leetcode import runnable
+
+    return runnable.targets()[target].schema
 
 
 def tmp_dir(arg: str | None = None) -> pathlib.Path:
@@ -336,31 +376,119 @@ def tmp_dir(arg: str | None = None) -> pathlib.Path:
     return d
 
 
-def pick(query: str) -> tuple[Item, str]:
-    """Resolve a name, id, or target like leetcode-200 to (registry item, solver target)."""
-    item = None
-    if query in SOLVERS:
-        item = next((i for i in load_registry() if target_of(i) == query), None)
+def _problem_id(query: str) -> int | None:
+    """875, lc-875, lc875, leetcode-875 or problem-875 -> 875; anything else -> None."""
+    import re
+
+    m = re.fullmatch(r"(?:lc-?|leetcode-|problem-)?(\d+)", query.strip().lower())
+    return int(m[1]) if m else None
+
+
+def _problem_item(t: ProblemTarget) -> Item:
+    """A registry-shaped item describing a per-problem target, for naming and display."""
+    return {
+        "id": t.key,
+        "name": t.title,
+        "leetcode_id": t.pid,
+        "leetcode_title": t.title,
+        "lib": t.lib,
+    }
+
+
+def _title_match(query: str) -> ProblemTarget | None:
+    """A runnable problem whose title equals the query, or is the only title it prefixes."""
+    from algo.leetcode import runnable
+
+    q = _norm(query).strip()
+    if len(q) < 3:  # noqa: PLR2004 - too short to name a problem
+        return None
+    exact = [t for t in runnable.targets().values() if _norm(t.title) == q]
+    prefix = [t for t in runnable.targets().values() if _norm(t.title).startswith(q)]
+    if exact:
+        return exact[0]
+    return prefix[0] if len(prefix) == 1 else None
+
+
+def _exact_algorithm(query: str) -> Item | None:
+    """Registry entry whose id equals the query (ignoring case and -/_)."""
+    q = _norm(query).strip()
+    return next((i for i in load_registry() if _norm(i["id"]) == q), None)
+
+
+def _resolve_number(query: str, pid: int) -> tuple[Item, str | None] | None:
+    """lc-N is always the per-problem solution; a bare N prefers an existing leetcode-N solver."""
+    from algo.leetcode import runnable
+
+    if not query.strip().lower().startswith("lc") and f"leetcode-{pid}" in SOLVERS:
+        return resolve_target(f"leetcode-{pid}")
+    t = runnable.get(f"lc-{pid}")
+    return (_problem_item(t), t.key) if t else None
+
+
+def _resolve_name(query: str) -> tuple[Item, str | None] | None:
+    """Exact algorithm id -> problem title -> fuzzy algorithm (falling back to its problem)."""
+    from algo.leetcode import runnable
+
+    item = _exact_algorithm(query)
+    if item is None and (t := _title_match(query)):
+        legacy = f"leetcode-{t.pid}"
+        return resolve_target(legacy) if legacy in SOLVERS else (_problem_item(t), t.key)
     item = item or resolve_algorithm(query)
+    if item is None:
+        return None
+    if target_of(item) in SOLVERS:
+        return item, target_of(item)
+    t = runnable.get(f"lc-{item['leetcode_id']}") if item.get("leetcode_id") else None
+    t = t or _primary_problem_target(item["id"])
+    return item, (t.key if t else None)
+
+
+def _primary_problem_target(algo_id: str) -> ProblemTarget | None:
+    """Lowest-numbered solved problem whose primary pattern is algo_id (fallback runner)."""
+    from algo.leetcode import runnable
+
+    for p in sorted(load_problems(), key=lambda p: p["id"]):
+        if p["algorithms"][:1] == [algo_id] and (t := runnable.get(f"lc-{p['id']}")):
+            return t
+    return None
+
+
+def resolve_target(query: str) -> tuple[Item, str | None] | None:
+    """Resolve a query to (item, solver target); target None = known but not runnable.
+
+    Order: solver key -> problem number (875, lc-875) -> exact algorithm id -> problem title ->
+    fuzzy algorithm. An algorithm without a solver runs its representative problem's solution,
+    else the lowest-numbered solved problem whose primary pattern it is.
+    """
+    if query in SOLVERS:
+        return next((i for i in load_registry() if target_of(i) == query), {"id": query}), query
+    pid = _problem_id(query)
+    return _resolve_number(query, pid) if pid is not None else _resolve_name(query)
+
+
+def pick(query: str) -> tuple[Item, str]:
+    """Resolve a query to (item, solver target), or exit with a hint."""
+    found = resolve_target(query)
+    item, target = found if found else (None, None)
     if not item:
         print(
             f"no algorithm matches {query!r}  (try: algo s {query}  or  algo p {query})",
             file=sys.stderr,
         )
         raise SystemExit(1)
-    if target_of(item) not in SOLVERS:
+    if target is None:
         print(
             f"{item['id']} is in the registry but has no solver yet"
             " — see docs/API.md ('Adding a solver')",
             file=sys.stderr,
         )
         raise SystemExit(1)
-    return item, target_of(item)
+    return item, target
 
 
 def lib_path(item: Item, outdir: pathlib.Path) -> pathlib.Path:
     """Where `algo g` writes an algorithm's library file."""
-    return outdir / f"{item['id'].replace('-', '_')}.py"
+    return outdir / f"{(item.get('lib') or item['id']).replace('-', '_')}.py"
 
 
 def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
@@ -369,6 +497,8 @@ def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
 
     from algo import solutions
 
+    if target.startswith("lc-"):
+        return _generate_problem_lib(item, target, outdir)
     fn = SOLVERS[target]
     parts = [inspect.getsource(getattr(solutions, h)) for h in HELPERS.get(target, [])] + [
         inspect.getsource(fn)
@@ -396,6 +526,19 @@ def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
     return path
 
 
+def _generate_problem_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
+    """Write a standalone library for a per-problem target (helpers and node types inlined)."""
+    from algo.leetcode import runnable
+
+    t = runnable.targets()[target]
+    path = lib_path(item, outdir)
+    title = f"{t.title} — {t.key} (LeetCode {t.pid})"
+    if item["id"] != t.key:
+        title = f"{item.get('name')} — {item['id']} (LeetCode {t.pid}: {t.title})"
+    path.write_text(runnable.library_source(target, title, str(path)))
+    return path
+
+
 def cmd_generate(args: argparse.Namespace) -> None:
     """Write an algorithm's importable library file and print its path."""
     item, target = pick(" ".join(args.query))
@@ -416,22 +559,30 @@ def pull(toks: list[str], *names: str) -> str | None:
     return None
 
 
+def _names_target(word: str) -> bool:
+    """Is a trailing `algo i` word a target? Bare numbers stay values; use lc-N or -a for those."""
+    if _problem_id(word) is not None and not word.lower().startswith(("lc", "leetcode")):
+        return False
+    found = resolve_target(word)
+    return bool(found and found[1])
+
+
 def cmd_inputs(args: argparse.Namespace) -> None:
     """Write inputs.py: `algo i <value> [<value> ...] [<algo>] [-a algo] [-o dir]`."""
     import pprint
 
-    from algo.shorthand import SCHEMAS, ShorthandError, build_input, split_values
+    from algo.shorthand import ShorthandError, build_input, split_values
 
     toks = list(args.tokens)
-    algo = pull(toks, "-a", "--algo")
-    outdir = tmp_dir(pull(toks, "-o", "--out-dir"))
+    algo = pull(toks, "-a", "--algo") or args.algo_opt
+    outdir = tmp_dir(pull(toks, "-o", "--out-dir") or args.out_opt)
     try:
         vals = split_values(toks)
     except ShorthandError as e:
         print(f"bad input: {e}", file=sys.stderr)
         raise SystemExit(2) from e
     if algo is None:  # trailing bare word that names an algorithm
-        if vals and vals[-1][:1] not in "[{'\"" and resolve_algorithm(vals[-1]):
+        if vals and vals[-1][:1] not in "[{'\"" and _names_target(vals[-1]):
             algo = vals.pop()
         else:
             print(
@@ -440,10 +591,16 @@ def cmd_inputs(args: argparse.Namespace) -> None:
             )
             raise SystemExit(2)
     item, target = pick(algo)
-    schema = SCHEMAS[target]
+    schema = schema_for(target)
     try:
         data = build_input(
-            target, vals, sample_for(target), None, __import__("random").Random(), strict=True
+            target,
+            vals,
+            sample_for(target),
+            None,
+            __import__("random").Random(),
+            strict=True,
+            schema=schema,
         )
     except (ShorthandError, ValueError) as e:
         print(
@@ -472,7 +629,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     """Run in-process: `algo run <algo> [values...] [then <algo> [values...]] ...`."""
     import random
 
-    from algo.shorthand import SCHEMAS, ShorthandError, build_input, split_values
+    from algo.shorthand import ShorthandError, build_input, split_values
 
     toks = list(args.tokens)
     seed = args.seed
@@ -498,15 +655,22 @@ def cmd_run(args: argparse.Namespace) -> None:
             raise SystemExit(2)
         item, target = pick(st[0])
         try:
-            data = build_input(target, split_values(st[1:]), sample_for(target), prev, rng)
+            data = build_input(
+                target,
+                split_values(st[1:]),
+                sample_for(target),
+                prev,
+                rng,
+                schema=schema_for(target),
+            )
         except (ShorthandError, ValueError) as e:
             print(
                 f"{item['id']}: bad input: {e}\n  fields: "
-                + " ".join(f"{k}:{v}" for k, v in SCHEMAS[target].items()),
+                + " ".join(f"{k}:{v}" for k, v in schema_for(target).items()),
                 file=sys.stderr,
             )
             raise SystemExit(2) from e
-        prev = SOLVERS[target](data)
+        prev = run_solver(item, target, data)
         if verbose or len(stages) > 1:
             shown = json.dumps(data, separators=(",", ":"))
             print(f"{item['id']:<16} in={shown}  out={json.dumps(prev)}", file=sys.stderr)
@@ -584,6 +748,7 @@ def cmd_problems(args: argparse.Namespace) -> None:
                 "score": s,
                 "has_solver": f"leetcode-{p['id']}" in SOLVERS,
                 "has_solution": p["id"] in solved,
+                "target": f"lc-{p['id']}" if p["id"] in solved else None,
             }
             for s, p in rows
         ]
@@ -650,16 +815,36 @@ def _check_solvers(reg: list[Item]) -> list[str]:
     return errs
 
 
+def _check_problem_targets() -> list[str]:
+    """Every per-problem target has known field types and reproduces its catalog example."""
+    from algo.leetcode import runnable
+    from algo.shorthand import SCHEMAS
+
+    known = {k for sc in SCHEMAS.values() for k in sc.values()} | set(runnable.TYPE_MAP.values())
+    errs = []
+    for key, t in runnable.targets().items():
+        errs += [f"{key}: unknown field type {v!r}" for v in t.schema.values() if v not in known]
+        try:
+            got = runnable.run(key, runnable.sample(key))
+        except Exception as e:
+            errs.append(f"{key}: failed on its sample: {type(e).__name__}: {e}")
+            continue
+        if not runnable.matches_expected(key, got):
+            errs.append(f"{key}: sample gave {got!r}, expected {runnable.expected(key)!r}")
+    return errs
+
+
 def cmd_check(_args: argparse.Namespace) -> NoReturn:
     """Cross-check registry, problem index, solvers, schemas, cases. Exit 1 on any error."""
     reg = load_registry()
     solved = solved_ids()
-    errs = _check_problems(reg, solved) + _check_solvers(reg)
+    errs = _check_problems(reg, solved) + _check_solvers(reg) + _check_problem_targets()
     for e in errs:
         print("ERROR", e, file=sys.stderr)
     print(
         f"{len(reg)} algorithms, {len(load_problems())} problems "
-        f"({len(solved)} with verified solutions), {len(SOLVERS)} solvers, "
+        f"({len(solved)} with verified solutions), {len(SOLVERS)} solvers "
+        f"+ {len(solved)} problem targets, "
         f"{len(TARGETS)} judged targets: " + ("OK" if not errs else f"{len(errs)} error(s)")
     )
     raise SystemExit(1 if errs else 0)
@@ -700,6 +885,10 @@ def cmd_complete(args: argparse.Namespace) -> None:
         for t in SOLVERS:
             if t.startswith("leetcode-"):
                 print(f"{t}\tsolver target")
+        from algo.leetcode import runnable
+
+        for key, pt in runnable.targets().items():
+            print(f"{key}\t{pt.title}")
     elif args.kind == "judged":
         for t in sorted(TARGETS):
             print(t)
@@ -708,13 +897,25 @@ def cmd_complete(args: argparse.Namespace) -> None:
             print(c)
 
 
-def cmd_shapes(_args: argparse.Namespace) -> None:
-    """Print each solver's input fields and types."""
+def cmd_shapes(args: argparse.Namespace) -> None:
+    """Print each solver's input fields and types, or one target's (`algo sh 875`)."""
     from algo.shorthand import SCHEMAS
 
+    if args.query:
+        item, target = pick(" ".join(args.query))
+        fields = " ".join(f"{k}:{v}" for k, v in schema_for(target).items())
+        print(f"{item['id']:<16} {fields}")
+        if target.startswith("lc-") and item["id"] != target:
+            from algo.leetcode import runnable
+
+            t = runnable.targets()[target]
+            print(f"{'':<16} runs: {t.key} {t.title}")
+        print(f"{'':<16} sample: {json.dumps(sample_for(target), default=repr)}")
+        return
     for t, sc in SCHEMAS.items():
         item = next((i for i in load_registry() if target_of(i) == t), {})
         print(f"{item.get('id', t):<16} " + " ".join(f"{k}:{v}" for k, v in sc.items()))
+    print(f"(+ {len(solved_ids())} problem targets lc-N: algo sh <problem>, e.g. algo sh 875)")
 
 
 def cmd_assert(args: argparse.Namespace) -> NoReturn:
@@ -839,6 +1040,10 @@ def _add_build_commands(sub: Any) -> None:
         aliases=["i"],
         help="write inputs.py for an algorithm (generates its library if missing)",
     )
+    # -a/-o are declared so they also work as the first token (REMAINDER can't start with a flag);
+    # later in the line they are pulled out of `tokens` by cmd_inputs.
+    inp.add_argument("-a", "--algo", dest="algo_opt", help="algorithm or problem (875, lc-875)")
+    inp.add_argument("-o", "--out-dir", dest="out_opt", help="output dir")
     inp.add_argument(
         "tokens", nargs=argparse.REMAINDER, help="<values...> [<algo>] [-a algo] [-o dir]"
     )
@@ -851,6 +1056,7 @@ def _add_build_commands(sub: Any) -> None:
     co.add_argument("kind", choices=["algos", "runnable", "judged", "comparators"])
     co.set_defaults(func=cmd_complete)
     sh = sub.add_parser("shapes", aliases=["sh"])
+    sh.add_argument("query", nargs="*", help="one algorithm or problem (875, lc-875, koko)")
     sh.set_defaults(func=cmd_shapes)
     t = sub.add_parser("targets")
     t.set_defaults(func=cmd_targets)
