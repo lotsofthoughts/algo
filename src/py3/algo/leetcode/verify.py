@@ -79,7 +79,8 @@ def load_ref(ref_dir: pathlib.Path, pid: int) -> dict[str, Any] | None:
     if not path.is_file():
         return None
     ns = ref_namespace()
-    exec(compile(path.read_text(), str(path), "exec"), ns)  # noqa: S102 - the user-chosen reference repo
+    # Running the user-chosen reference repo's solutions is the point of this tool.
+    exec(compile(path.read_text(), str(path), "exec"), ns)  # noqa: S102  # nosec B102
     return ns
 
 
@@ -122,11 +123,11 @@ def call_ours(pid: int, spec: Spec, args: Args) -> Any:
     """Run our solution on args, normalising linked-list output."""
     fn = solutions.by_id()[pid]
     if spec.design:
-        return run_design(lambda _name: fn, *copy.deepcopy(args))  # type: ignore[arg-type,return-value]
+        return run_design(lambda _name: fn, *copy.deepcopy(args))
     if spec.kinds[:1] == ("badversion",):
         n, bad = args
-        return fn(n, lambda v: v >= bad)  # type: ignore[operator]
-    out = fn(*prepare(args, spec, for_ref=False))  # type: ignore[operator]
+        return fn(n, lambda v: v >= bad)
+    out = fn(*prepare(args, spec, for_ref=False))
     return from_list_node(out) if spec.out == "ll" else out
 
 
@@ -144,8 +145,8 @@ def call_ref(ns: dict[str, Any], spec: Spec, args: Args) -> Any:
 
 def same(spec: Spec, args: Args, a: Any, b: Any) -> bool:
     """Compare two outputs under the spec's comparator."""
-    if callable(spec.out):
-        return spec.out(args, a, b)
+    if not isinstance(spec.out, str):
+        return bool(spec.out(args, a, b))
     if spec.out == "float":
         return math.isclose(a, b, rel_tol=1e-5, abs_tol=1e-5)
     if spec.out == "unordered":

@@ -13,7 +13,7 @@ import heapq
 import random
 from collections import Counter, defaultdict, deque
 from functools import cmp_to_key, lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from algo.leetcode.structures import ListNode, TreeNode
 
@@ -651,8 +651,8 @@ def lc21_merge_two_lists(list1: ListNode | None, list2: ListNode | None) -> List
 def lc876_middle_node(head: ListNode | None) -> ListNode | None:
     """fast-slow-pointers: slow is at the (second) middle when fast falls off. O(n)."""
     slow = fast = head
-    while fast and fast.next:
-        slow, fast = slow.next, fast.next.next  # type: ignore[union-attr]
+    while slow is not None and fast is not None and fast.next is not None:
+        slow, fast = slow.next, fast.next.next
     return slow
 
 
@@ -1345,9 +1345,9 @@ SQL: dict[int, str] = {
 
 
 @lru_cache(maxsize=1)
-def by_id() -> dict[int, object]:
+def by_id() -> dict[int, Any]:
     """Map LeetCode id -> solution function, class, or SQL string."""
-    out: dict[int, object] = dict(SQL)
+    out: dict[int, Any] = dict(SQL)
     for name, obj in globals().items():
         if name.startswith("lc") and callable(obj):
             out[int(name[2:].split("_", 1)[0])] = obj

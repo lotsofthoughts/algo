@@ -63,8 +63,9 @@ def to_tree(values: list[int | None]) -> TreeNode | None:
     while q and i < len(values):
         node = q.popleft()
         for side in ("left", "right"):
-            if i < len(values) and values[i] is not None:
-                child = TreeNode(values[i])  # type: ignore[arg-type]
+            v = values[i] if i < len(values) else None
+            if v is not None:
+                child = TreeNode(v)
                 setattr(node, side, child)
                 q.append(child)
             i += 1
