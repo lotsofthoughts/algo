@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Differential-test the 99 study-list solutions against cnkyrpsgl/leetcode + brute force (clones the reference on first run)"
+set -euo pipefail
+root="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$root/src/py3"
+exec python3 -m algo.cli.main verify --fetch "$@"

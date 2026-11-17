@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#MISE description="Bundle the workbench into a zero-dep self-installer (dist/) for the snipkey hotkey"
+set -euo pipefail
+script="$(dirname "$0")/../../scripts/algopack.py"
+# Default to the `build` subcommand so `mise run pack` and
+# `mise run pack -- --chord-bash ...` work without typing `build`.
+if [ $# -eq 0 ]; then
+  exec python3 "$script" build
+fi
+case "$1" in
+  build|selftest|-h|--help) exec python3 "$script" "$@" ;;
+  *)                        exec python3 "$script" build "$@" ;;
+esac

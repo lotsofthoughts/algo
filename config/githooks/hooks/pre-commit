@@ -41,11 +41,16 @@ if [ -n "$STAGED_PY" ]; then
 
   # Lizard: cyclomatic complexity check on staged files
   echo -e "  ${BLUE:-}→ lizard (complexity)${ENDCOLOR:-}"
+  # Only accept the code-complexity analyzer (it has --CCN). Homebrew's `lizard`
+  # formula is an unrelated compressor that would otherwise be picked up here.
+  is_analyzer() { $1 --help 2>&1 | grep -q -- '--CCN'; }
   LIZARD_CMD=""
-  if command -v lizard &>/dev/null; then
+  if command -v lizard &>/dev/null && is_analyzer lizard; then
     LIZARD_CMD="lizard"
   elif python -c "import lizard" &>/dev/null 2>&1; then
     LIZARD_CMD="python -m lizard"
+  elif command -v uvx &>/dev/null && is_analyzer "uvx lizard"; then
+    LIZARD_CMD="uvx lizard"
   fi
 
   if [ -n "$LIZARD_CMD" ]; then
