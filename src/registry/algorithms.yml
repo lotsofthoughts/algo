@@ -1,3 +1,7 @@
+# Algorithm (pattern) registry. One entry per pattern; searched by `algo s`.
+# Each entry starts with a line exactly "  - id: <id>"; one field per line; lists are inline [a, b]
+# with no commas inside items. `leetcode: { id: N, title: ... }` names the representative problem and
+# so the solver key (leetcode-N). Field reference: docs/API.md §3. Run `algo check` after editing.
 algorithms:
   - id: dfs
     name: Depth-First Search

@@ -1,3 +1,5 @@
+# Documentation only: NOT read by code. The judged targets live in TARGETS in
+# py3/algo/cli/main.py; keep this file in step with it (see docs/API.md §5 and §9).
 targets:
   leetcode-1: { algorithm: hash-map, comparator: unordered-array, input: cases/leetcode-1/case-1.input.json, expected: cases/leetcode-1/case-1.expected.json }
   leetcode-200: { algorithm: dfs, comparator: number, input: cases/leetcode-200/case-1.input.json, expected: cases/leetcode-200/case-1.expected.json }

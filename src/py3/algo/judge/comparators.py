@@ -1,3 +1,9 @@
+"""Comparators used by `algo judge` and `algo assert`.
+
+Each takes (actual, expected, context=None) and returns True on a pass. Register new ones in
+COMPARATORS; the key is what TARGETS in algo.cli.main and `--comparator` refer to.
+"""
+
 from __future__ import annotations
 
 from collections import Counter

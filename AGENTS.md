@@ -5,7 +5,13 @@ working on this repository.
 
 ## Repository Overview
 
-Python 3 template using: **UV** (packaging) · **Ruff** (lint + format) · **Ty** (type checking) · **pytest** (testing) · **Mise** (tasks + tools)
+**Algo Workbench**: a stdlib-only algorithm registry, solver generator and verifier, built on a Python 3
+template using **UV** (packaging) · **Ruff** (lint + format) · **Ty** (type checking) · **pytest** (testing) ·
+**Mise** (tasks + tools).
+
+Workbench code lives in `src/py3/algo/` (runtime tree: `src/py3`, `src/registry`, `src/cases`, `src/shell`).
+Read [README.md](README.md), then [docs/API.md](docs/API.md) before changing the registry, solvers or schemas,
+and run `algo check` (plus `algo verify <ids>` for study-list solutions) after any change.
 
 ## Project Structure
 

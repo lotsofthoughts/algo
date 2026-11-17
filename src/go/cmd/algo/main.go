@@ -1,3 +1,10 @@
+// Command algo is the experimental Go backend of the Algo Workbench.
+//
+// It implements the original ten judged solvers behind a single `solve` subcommand
+// (JSON in, JSON out); search, problems, generate, inputs, run and verify exist only in the
+// Python CLI. Select it with ALGO_LANG=go, e.g.
+//
+//	ALGO_LANG=go algo solve leetcode-743 --input cases/leetcode-743/case-1.input.json
 package main
 
 import (

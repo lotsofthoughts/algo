@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- README rewritten as the **Algo Workbench** project README (install, the four-step solving process,
+  command cheat-sheet, verification, layout, development), linking `docs/API.md` for the full spec.
+- `docs/cases/`: five worked examples (topological sort, Dijkstra, top-k, flood fill, coin-change DP), each
+  going identification → judging → solving with `.a i` → chaining, using real CLI output.
+- Module docstrings for the `algo` CLI, comparators and every `algo.*` package (placeholders say what they are
+  reserved for); header comments on the Go backend, `algorithms.yml`, `problem-targets.yml` and `bootstrap.fish`.
+- `src/README.md` reduced to a map of the runtime tree.
+
 - `study99` list: all 99 problems from `request.md` mapped to LeetCode ids in `registry/problems.yml`, each with
   primary/alternative patterns and a new `uses` field (other places the technique applies). Table: `docs/study99.md`.
 - Per-problem solutions for all 99 (`src/py3/algo/leetcode/`), with test specs, brute-force oracles and SQL fixtures.
