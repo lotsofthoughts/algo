@@ -133,6 +133,8 @@ line-ending = "auto"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Import from src/ directly: macOS can flag .venv/*.pth as hidden, which Python 3.13+ skips.
+pythonpath = ["src"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import pathlib
 import subprocess
 import sys
 
@@ -85,11 +87,19 @@ def test_main_info(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_main_version_flag() -> None:
     """--version flag exits 0 with version string."""
+    # Put src/ on the child's path explicitly: an editable install's .pth can be skipped
+    # (macOS may flag .venv files hidden, and Python 3.13+ ignores hidden .pth files).
+    src = pathlib.Path(__file__).resolve().parents[1] / "src"
+    env = {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join(filter(None, [str(src), os.environ.get("PYTHONPATH")])),
+    }
     result = subprocess.run(
         [sys.executable, "-m", "python_template", "--version"],
         capture_output=True,
         text=True,
         check=False,
+        env=env,
     )
     assert result.returncode == 0
     assert "python-template" in result.stdout or "python-template" in result.stderr
