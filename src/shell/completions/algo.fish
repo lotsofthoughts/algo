@@ -70,6 +70,7 @@ for c in algo .a
     # pipe / judge / assert
     complete -c $c -n '__fish_seen_subcommand_from pipe' -s i -l input -r -F -d 'JSON input file'
     complete -c $c -n '__fish_seen_subcommand_from pipe' -a '(algo complete runnable 2>/dev/null)'
+    complete -c $c -n '__fish_seen_subcommand_from shapes sh' -a '(algo complete runnable 2>/dev/null)' -d 'target'
     complete -c $c -n '__fish_seen_subcommand_from judge' -a '(algo complete judged 2>/dev/null)'
     complete -c $c -n '__fish_seen_subcommand_from assert' -l expected -r -F -d 'expected JSON file'
     complete -c $c -n '__fish_seen_subcommand_from assert' -l actual -r -F -d 'actual JSON file'

@@ -8,6 +8,10 @@ positionally, or by name with ``key=value``. Value sugar by type:
   str      abcabcbb | rand:10:abc                 (n, alphabet)
   cgrid    11000/11000/00100   (chars)  | rand:4x5[:01]
   igrid    2,1,1/1,1,0/0,1,1   (ints)   | rand:4x5[:012]
+  strs     eat,tea,tan                            (list of strings)
+  floats   0.5,0.5,0.2                            (list of numbers)
+  ll       2,4,3   | 1..5 | rand:...              (ints, passed as a linked list)
+  tree     3,9,20,null,null,15,7                  (level order; null = no node)
   any      5 | abc | [1, 2] | [a: [1, 2], b: [3]]   (literal syntax, see below)
   edges    1-2 1-3 2-3 | 1-2-3-4 (path) | rand:6:8 (nodes, edges; acyclic u>v)
   wedges   2-1:1 2-3:1 3-4:1    (u-v:weight) | rand:6:8
@@ -227,6 +231,18 @@ def _parse_edges(tok: str, parts: list[str], rng: random.Random, weighted: bool)
     return out  # 1-2-3 => [1,2],[2,3]
 
 
+def _parse_strs(tok: str, _parts: list[str], _rng: random.Random, _alpha: str) -> object:
+    return [w for w in tok.split(",") if w]
+
+
+def _parse_floats(tok: str, _parts: list[str], _rng: random.Random, _alpha: str) -> object:
+    return [_scalar(x) for x in tok.split(",") if x]
+
+
+def _parse_tree(tok: str, _parts: list[str], _rng: random.Random, _alpha: str) -> object:
+    return [_scalar(x) for x in tok.split(",") if x]
+
+
 def parse_value(kind: str, tok: str, rng: random.Random, alpha: str = "01") -> object:
     """Parse one token as `kind` (see the module docstring for each type's sugar)."""
     if kind == "any" or tok[:1] in ("[", "{", "'", '"'):
@@ -239,24 +255,40 @@ def parse_value(kind: str, tok: str, rng: random.Random, alpha: str = "01") -> o
         return [[int(x) for x in r] for r in rows] if kind == "igrid" else rows
     if kind in ("edges", "wedges"):
         return _parse_edges(tok, parts, rng, weighted=kind == "wedges")
-    parsers = {"ints": _parse_ints, "str": _parse_str}
+    parsers = {
+        "ints": _parse_ints,
+        "ll": _parse_ints,
+        "str": _parse_str,
+        "strs": _parse_strs,
+        "floats": _parse_floats,
+        "tree": _parse_tree,
+    }
     if kind not in parsers:
         raise ShorthandError(f"unknown type {kind}")
     return parsers[kind](tok, parts, rng, alpha)
 
 
 def _fits(kind: str, val: object) -> bool:
+    """Can a previous stage's output fill a field of this kind without an explicit `_`?"""
     if isinstance(val, bool):
         return False
     if isinstance(val, int):
         return kind == "int"
-    return kind == "ints" and isinstance(val, list) and all(isinstance(x, int) for x in val)
+    if isinstance(val, str):
+        return kind == "str"
+    if not isinstance(val, list):
+        return False
+    if all(isinstance(x, int) and not isinstance(x, bool) for x in val):
+        return kind in ("ints", "ll", "floats")
+    return kind == "strs" and all(isinstance(x, str) for x in val)
 
 
-def _field_for(target: str, tok: str, pos: list[str], data: dict) -> tuple[str, str]:
+def _field_for(
+    target: str, schema: dict[str, str], tok: str, pos: list[str], data: dict
+) -> tuple[str, str]:
     """Which field a token fills: `name=value`, else the next unfilled positional field."""
     key, eq, val = tok.partition("=")
-    if eq and key in SCHEMAS[target]:
+    if eq and key in schema:
         return key, val
     free = [f for f in pos if f not in data]
     if not free:
@@ -280,9 +312,13 @@ def build_input(  # noqa: PLR0913 - one value per pipeline input; all are needed
     rng: random.Random,
     *,
     strict: bool = False,
+    schema: dict[str, str] | None = None,
 ) -> dict:
-    """Turn shorthand tokens into the solver's input dict."""
-    schema = SCHEMAS[target]
+    """Turn shorthand tokens into the solver's input dict.
+
+    `schema` overrides SCHEMAS[target]; per-problem targets (lc-N) pass their derived schema.
+    """
+    schema = schema if schema is not None else SCHEMAS[target]
     data = dict(sample) if (not tokens or tokens == ["@"]) else {}
     alpha = GRID_ALPHA.get(target, "01")
     pos = list(schema)
@@ -291,7 +327,7 @@ def build_input(  # noqa: PLR0913 - one value per pipeline input; all are needed
         if tok == "@":
             data = {**sample, **data}
             continue
-        field, raw = _field_for(target, tok, pos, data)
+        field, raw = _field_for(target, schema, tok, pos, data)
         if raw == "_":
             if prev is None:
                 raise ShorthandError("'_' used with no previous stage")
