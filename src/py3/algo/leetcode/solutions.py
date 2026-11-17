@@ -1015,13 +1015,12 @@ def lc1405_longest_diverse_string(a: int, b: int, c: int) -> str:
     while heap:
         cnt, ch = heapq.heappop(heap)
         if len(out) >= 2 and out[-1] == out[-2] == ch:  # noqa: PLR2004
-            if not heap:
-                break
-            cnt2, ch2 = heapq.heappop(heap)
-            out.append(ch2)
-            if cnt2 + 1:
-                heapq.heappush(heap, (cnt2 + 1, ch2))
-            heapq.heappush(heap, (cnt, ch))
+            if heap:
+                cnt2, ch2 = heapq.heappop(heap)
+                out.append(ch2)
+                if cnt2 + 1:
+                    heapq.heappush(heap, (cnt2 + 1, ch2))
+                heapq.heappush(heap, (cnt, ch))
         else:
             out.append(ch)
             if cnt + 1:
