@@ -1,3 +1,5 @@
+# Fish counterpart of bootstrap.sh: defines `algo` and `.a`, honours ALGO_HOME / ALGO_LANG,
+# and loads tab completion. ALGO_HOME defaults to this file's parent's parent (the src/ tree).
 set -q ALGO_HOME; or set -gx ALGO_HOME (dirname (dirname (status --current-filename)))
 function algo
   set -l root $ALGO_HOME

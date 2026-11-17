@@ -4,6 +4,9 @@ How the registry, problem index, solvers and schemas fit together, how to add ea
 today. The inventory tables in §8 were generated from the live registry on 2026-11-17; run
 `algo check` after any change to keep everything consistent.
 
+New here? Start with the [README](../README.md) for install and the four-step solving process, and
+[cases/](cases/README.md) for five worked examples. This file is the reference.
+
 Contents: [1 Mental model](#1-mental-model) · [2 Commands](#2-command-reference) ·
 [3 Registry](#3-the-algorithm-registry) · [4 Problem index](#4-the-problem-index) ·
 [5 Solvers](#5-solvers) · [5.1 Per-problem solutions](#51-per-problem-solutions-and-algo-verify) · [6 Schemas](#6-schemas-and-input-shorthand) ·

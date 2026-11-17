@@ -1,4 +1,22 @@
 #!/usr/bin/env python3
+"""The `algo` command: find, judge, generate, run and verify algorithms.
+
+Subcommands (full spec in docs/API.md §2):
+
+    problems (p)   problem title / number / keywords / use case -> algorithms
+    search   (s)   algorithms by name, identification phrase or disqualifier
+    generate (g)   write the importable library $ALGO_TMP/<id>.py
+    inputs   (i)   write $ALGO_TMP/inputs.py that calls the library on shorthand values
+    run      (r)   run in-process; chain stages with `then`, `_` = previous output
+    shapes   (sh)  input fields and types per solver
+    pipe / assert / judge / targets   JSON in -> JSON out, compare, judge samples
+    verify         differential-test the per-problem solutions (algo.leetcode.verify)
+    check          cross-validate registry, problems, solvers, schemas and cases
+
+Data lives in registry/*.yml (parsed with small regex loaders, no PyYAML) and solvers in
+algo.solutions. Stdlib only, so it runs from the offline installer (scripts/algopack.py).
+"""
+
 from __future__ import annotations
 
 import argparse

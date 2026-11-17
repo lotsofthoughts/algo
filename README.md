@@ -1,222 +1,179 @@
-# python3
+# Algo Workbench
 
-> Python 3 template — UV · Ruff · Ty · pytest · Mise · PyInstaller · GHAS
+> Find the pattern, judge it, generate the code, feed it your inputs, chain it into the next algorithm —
+> from one shell command. Stdlib-only Python, offline, YAML-driven.
 
-A batteries-included Python 3 project template modelled after [orchestras/deno](https://github.com/orchestras/deno). All automation lives in `.mise/tasks/` as executable scripts (no inline TOML blocks), making tasks portable for the upcoming `mise-sync` engine.
+An interview-prep workbench that maps problems to algorithms and turns any algorithm into a runnable,
+importable Python file in seconds. 38 algorithm patterns, 171 indexed LeetCode problems, and a
+99-problem study list where every problem has a solution verified against an independent reference.
 
----
-
-## Features
-
-| Tool | Role |
-|------|------|
-| [UV](https://docs.astral.sh/uv/) | Fast Python package manager + venv |
-| [Ruff](https://docs.astral.sh/ruff/) | Linter + formatter (replaces flake8, isort, black) |
-| [Ty](https://github.com/astral-sh/ty) | Type checker (Astral's next-gen checker) |
-| [pytest](https://pytest.org) | Test runner with coverage |
-| [Mise](https://mise.jdx.dev) | Tool version manager + task runner |
-| [PyInstaller](https://pyinstaller.org) | Cross-platform binary compilation |
-| [GHAS / CodeQL](https://github.com/features/security) | GitHub Advanced Security scanning |
-| [Dependabot](https://docs.github.com/en/code-security/dependabot) | Automated dependency updates |
+- **Full CLI spec:** [docs/API.md](docs/API.md)
+- **Worked examples (identify → judge → solve → chain):** [docs/cases/](docs/cases/README.md)
+- **The 99-problem study list, with other uses of each technique:** [docs/study99.md](docs/study99.md)
 
 ---
 
-## Quick Start
+## Install
+
+**From the repo** (bash, zsh or fish):
 
 ```bash
-# 1. Install mise (https://mise.jdx.dev)
-curl https://mise.run | sh
-
-# 2. Clone the template and initialise
-git clone https://github.com/orchestras/python3 my-project
-cd my-project
-
-# 3. Full project init (installs tools, deps, configures git)
-mise run project:init
-
-# 4. Run the app
-mise run run
+source src/shell/bootstrap.sh      # or: source src/shell/bootstrap.fish
+algo check                         # 38 algorithms, 171 problems (99 with verified solutions) ... OK
 ```
+
+This defines `algo` and its alias `.a` (in zsh `.a` is `noglob algo`, so `[a: [1, 2]]` isn't globbed) and
+loads tab completion for bash and fish.
+
+**Anywhere, no clone, no network:** `mise run pack` writes a single paste-able installer to `dist/`
+(`algo.install.sh` / `.fish`, plus snipkey, iTerm2 and VS Code bindings). Pasting it unpacks the workbench into
+`$ALGO_HOME` (default `/tmp/algo`) and sources it. `python3 scripts/algopack.py selftest` proves the round trip.
+
+Requirements: `python3` (3.12+). Nothing else at runtime.
+
+| Env var | Default | Meaning |
+| --- | --- | --- |
+| `ALGO_HOME` | the repo's `src/` | Install root |
+| `ALGO_TMP` | `$TMPDIR` | Where `generate` / `inputs` write files |
+| `ALGO_LANG` | `py3` | `go` runs the experimental Go backend (10 solvers, `solve` only) |
 
 ---
 
-## Task Reference
+## The solving process
 
-Run `mise tasks` to list all tasks with descriptions.
+Every problem goes through the same four steps. Each has one command.
 
-### Development
+| Step | Question | Command |
+| --- | --- | --- |
+| **1. Identify** | Which problem is this, and what pattern does it use? | `.a p "<title, number, keywords or use case>"` |
+| **2. Judge** | Is that pattern right *here*? What signals it, what rules it out? | `.a s -j --id "<symptoms>"` · `.a s --disqualifier "<constraint>"` |
+| **3. Solve** | Give me the code, run on my inputs. | `.a i <values...> <algo>` → `python3 $TMPDIR/inputs.py` |
+| **4. Chain** | Feed the answer into the next algorithm. | `.a r <algo> <values> then <algo> _ ...` |
 
-```bash
-mise run install        # uv sync --all-extras
-mise run run            # python -m python_template
-mise run build          # sync version.py from pyproject.toml
+```console
+$ .a p "course order prerequisites" --top 2
+ 207* Course Schedule                    medium  -> topological-sort, dfs
+ 210  Course Schedule II                 medium  -> topological-sort
+
+$ .a s -j --id "dependencies ordering" --top 1        # matched: ["dependencies", "ordering"]
+
+$ .a i 4 1-0,2-0,3-1,3-2 topo                         # writes the library + inputs.py
+generated /tmp/algo-demo/topological_sort.py
+/tmp/algo-demo/inputs.py
+$ python3 $TMPDIR/inputs.py
+[0, 1, 2, 3]
+
+$ .a r topo 4 1-0,2-0,3-1,3-2 then binary-search _ target=3
+topological-sort in={"numCourses":4,"prerequisites":[[1,0],[2,0],[3,1],[3,2]]}  out=[0, 1, 2, 3]
+binary-search    in={"nums":[0,1,2,3],"target":3}  out=3
+3
 ```
 
-### Code Quality
-
-```bash
-mise run lint           # ruff check src/ tests/
-mise run lint:fix       # ruff check --fix
-mise run fmt            # ruff format
-mise run fmt:check      # ruff format --check (CI safe)
-mise run typecheck      # ty check src/
-```
-
-### Testing
-
-```bash
-mise run test           # pytest tests/
-mise run test:cov       # pytest + coverage report
-mise run test:watch     # pytest in watch mode (requires pytest-watch)
-```
-
-### CI
-
-```bash
-mise run ci:all         # full pipeline: install → lint → fmt:check → typecheck → test:cov
-```
-
-### Version Bumping
-
-```bash
-mise run version              # show current version
-mise run bump:patch           # 0.1.5 → 0.1.6
-mise run bump:minor           # 0.1.5 → 0.2.0
-mise run bump:major           # 0.1.5 → 1.0.0
-mise run bump:prerel alpha    # 0.1.5 → 0.1.5-alpha.1
-mise run tag:push             # push tags → triggers release workflow
-```
-
-### Git & VCS
-
-```bash
-mise run git:config           # configure delta, GPG, rebase-only, hooks path
-mise run vcs:rebase           # rebase feature branch onto origin/develop
-mise run vcs:integrate        # forward-integrate feature → develop (rebase + force push)
-mise run vcs:release          # release develop → main (rebase + force push)
-mise run vcs:protect          # apply branch protection rulesets via GitHub API
-```
-
-### Security & Scanning
-
-```bash
-mise run scan:ghas            # trigger CodeQL scan via workflow dispatch
-mise run scan:deps            # audit Python deps with pip-audit
-mise run scan:secrets         # scan for leaked secrets (trufflehog/gitleaks)
-```
-
-### Git Hooks
-
-```bash
-mise run hooks:sync           # sync hooks from orchestras/git-hooks
-mise run hooks:install        # register hooks path in git config
-```
-
-### Binary Compilation
-
-```bash
-mise run compile              # PyInstaller one-file binary for current platform
-```
-
-> For cross-platform binaries, push a version tag — the [release workflow](.github/workflows/release.yml)
-> builds on Linux AMD64/ARM64, macOS ARM64/AMD64, and Windows AMD64 in parallel.
+Five complete walkthroughs (topological sort, Dijkstra, top-k, flood fill, coin-change DP), each ending in a chain:
+**[docs/cases/](docs/cases/README.md)**.
 
 ---
 
-## Project Structure
+## Command cheat-sheet
 
+| Command | Does | Example |
+| --- | --- | --- |
+| `p` | Problem → algorithms. `*` = verified solution. `-u` other uses, `-l study99`, `-a ALGO`, `-j` | `.a p 875 -u` |
+| `s` | Find algorithms. `--id` symptoms, `--disqualifier` constraints, `-p` example problems, `-j` | `.a s bfs -p` |
+| `g` | Write the importable library `$TMPDIR/<id>.py` | `.a g dijkstra` |
+| `i` | Write `$TMPDIR/inputs.py` that calls the library on your values | `.a i 1,2,5 11 coin-change` |
+| `r` | Run in-process, no files; `then` chains, `_` = previous output | `.a r top-k 5,5,1 1 then coin-change _ 11` |
+| `sh` | Input fields and types per algorithm | `.a sh` |
+| `pipe` / `assert` / `judge` | JSON in → JSON out, compare, judge a sample | `.a judge leetcode-322` |
+| `verify` | Differential-test the 99 study-list solutions | `.a verify --fetch` |
+| `check` | Validate registry ↔ problems ↔ solvers ↔ schemas ↔ cases | `.a check` |
+
+**Input shorthand** (full table in [API.md §6](docs/API.md#6-schemas-and-input-shorthand)):
+`1,2,5` and `1..5` lists · `abcabcbb` strings · `11000/00100` grids · `1-0,2-0` edges · `2-1:1` weighted edges ·
+`rand:8:0-9`, `rand:4x5` random inputs · `[1, 2]`, `[k: v]` literals · `name=value` by field · `_` previous stage.
+
+---
+
+## Study list and verification
+
+All 99 problems on the study list are mapped to LeetCode ids, patterns and **other uses of each
+technique** ([docs/study99.md](docs/study99.md)). Each has a LeetCode-signature solution in
+[src/py3/algo/leetcode/](src/py3/algo/leetcode/), differential-tested by `algo verify`:
+
+| Compared against | Problems |
+| --- | --- |
+| [cnkyrpsgl/leetcode](https://github.com/cnkyrpsgl/leetcode) solutions (examples + 300 random inputs each) | 70 |
+| Slow brute-force oracles (reference lacks the problem, or its solution is wrong) | 24 |
+| SQL on sqlite with the example tables | 4 |
+| Statistical check (randomised problem) | 1 |
+
+```bash
+.a verify --fetch            # clone the reference once (~/.cache/algo/leetcode-ref), then test all 99
+.a verify 875 3886 -v        # a few problems, every failure printed
 ```
-.
-├── .devcontainer/         # VS Code Dev Container
-├── .github/
-│   ├── workflows/         # CI/CD pipelines
-│   ├── dependabot.yml     # Dependabot config
-│   └── CODEOWNERS         # Code ownership
-├── .mise/tasks/           # All mise tasks (executable scripts)
-├── config/
-│   └── githooks/hooks/    # Git hooks (synced via hooks:sync)
-├── scripts/               # Shared bash utilities
-├── src/
-│   └── python_template/   # Main package (rename for your project)
-│       ├── __init__.py
-│       ├── __main__.py    # CLI entry point
-│       ├── version.py     # Auto-generated — do not edit
-│       └── py.typed       # PEP 561 marker
-├── tests/                 # pytest test suite
-├── AGENTS.md              # AI agent instructions
-├── CHANGELOG.md           # Changelog
-├── CONTRIBUTING.md        # Contributor guide
-├── mise.toml              # Tool versions + task discovery
-└── pyproject.toml         # Python config (Ruff, pytest, coverage, etc.)
+
+Three reference solutions turned out to be wrong (8, 772, 875); see [docs/study99.md](docs/study99.md).
+
+---
+
+## How it fits together
+
+```text
+registry/algorithms.yml   pattern: identification phrases, disqualifiers, representative problem
+registry/problems.yml     problem → patterns (+ keywords, uses, list)          ← algo p
+        │                                                                      ← algo s
+        ▼
+py3/algo/solutions.py     one solver per pattern: f(dict) -> JSON              ← algo g / i / r / pipe
+py3/algo/shorthand.py     input schema per solver + shorthand parser
+cases/<target>/           sample input + expected output                       ← algo judge
+py3/algo/leetcode/        per-problem solutions, test specs, verifier          ← algo verify
+```
+
+Adding an algorithm, problem, solver or schema is a few lines each:
+[API.md §7](docs/API.md#7-end-to-end-checklist-worked-example) walks through one end to end.
+
+## Repository layout
+
+```text
+src/
+  py3/algo/          Python package: cli/ (the `algo` command), solutions, shorthand, judge/, leetcode/
+  registry/          algorithms.yml, problems.yml (problem-targets.yml is documentation only)
+  cases/             judged sample inputs and expected outputs
+  shell/             bootstrap.sh / .fish and tab completions
+  go/                experimental Go backend
+  python_template/   project-template CLI kept for the packaging, CI and release scaffolding
+docs/                API.md (CLI spec), cases/ (walkthroughs), study99.md
+scripts/algopack.py  builds the offline installer (`mise run pack`)
+tests/               pytest suite for the template package
 ```
 
 ---
 
-## Branch Workflow
+## Development
 
-```
-feature/xyz → develop → main → tag → release
-```
-
-**No merge commits anywhere.** Every integration is a rebase.
-
-### Keep your feature branch current
+Tooling: UV, Ruff, Ty, pytest and Mise; every task is a script in `.mise/tasks/`.
 
 ```bash
-# On your feature branch:
-mise run vcs:rebase
-# → git pull --rebase origin develop
+mise run install           # uv sync
+mise run lint:fix          # ruff check --fix (src/ tests/ scripts/)
+mise run fmt               # ruff format
+mise run typecheck         # ty check src/
+mise run test              # pytest
+mise run verify:leetcode   # algo verify --fetch
+mise run pack              # build dist/ installers
+mise run ci:all            # full pipeline
 ```
 
-### Integrate a feature branch into develop
+**Git flow is rebase-only:** `feature → develop → main → tag`. `mise run vcs:rebase` keeps a branch current,
+`vcs:integrate` lands it on `develop`, `vcs:release` rebases `main` onto `develop`, then `bump:patch` and
+`tag:push` cut a release. Hooks in `config/githooks/hooks` run ruff, a complexity check (lizard) and the tests.
+Contributor and agent rules: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md).
 
-```bash
-mise run vcs:integrate feat/my-feature
-# 1. Rebase feature onto origin/develop
-# 2. git checkout develop && git pull
-# 3. git rebase feat/my-feature
-# 4. git push --force-with-lease origin develop
-```
-
-### Release develop → main
-
-```bash
-mise run vcs:release
-# 1. git checkout main
-# 2. git rebase origin/develop
-# 3. git push --force-with-lease origin main
-```
-
-Then bump and tag:
-
-```bash
-mise run bump:patch   # (or :minor / :major)
-mise run tag:push     # triggers binary + Docker release CI
-```
-
----
-
-## Renaming This Template
-
-1. Replace `python_template` with your package name throughout `src/`
-2. Update `name` in `pyproject.toml`
-3. Update `project.scripts` entrypoint in `pyproject.toml`
-4. Run `mise run build` to sync `version.py`
-5. Update this README
-
----
-
-## GitHub Status Checks Setup
-
-For required status checks in branch rulesets to work:
-
-1. Push this template to GitHub (on `develop` branch)
-2. Open one PR to trigger the `pr-check` workflow — this registers the check names
-3. Run `mise run vcs:protect` to apply the ruleset via GitHub API
-4. The following checks will be required: `pr-check / lint`, `pr-check / typecheck`, `pr-check / test`, `pr-check / security`
-
----
+> **macOS note:** Homebrew's `lizard` is a file compressor, not the complexity analyzer the pre-commit hook
+> needs; install the analyzer with `uv tool install lizard`. If `python -m python_template` stops importing
+> after `uv sync`, macOS has flagged `.venv/*.pth` hidden (Python 3.13+ skips those):
+> `chflags nohidden .venv/lib/python3.*/site-packages/*.pth`.
 
 ## License
 
-MIT © [ørchestras](https://github.com/orchestras)
+MIT
