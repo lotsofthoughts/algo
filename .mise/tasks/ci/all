@@ -17,10 +17,10 @@ if [ ! -f "${PYTHON}" ]; then
 fi
 
 echo "--- Lint ---"
-ruff check src/ tests/
+ruff check src/ tests/ scripts/
 
 echo "--- Format check ---"
-ruff format --check src/ tests/
+ruff format --check src/ tests/ scripts/
 
 echo "--- Tests with coverage ---"
 "${PYTHON}" -m pytest tests/ \

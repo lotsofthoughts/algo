@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Every solved problem is runnable:** `lc-N` targets for all 99 study-list solutions in `generate`, `inputs`,
+  `run`, `pipe` and `shapes` (`algo r 875 3,6,7,11 8`, `algo g 2812`). Schemas are derived from each solution's
+  signature; design, SQL, 278 and 528 have adapters. Problems resolve by number, `lc-N` or title.
+- Algorithms without a solver run their representative problem's solution (or the first solved problem they are
+  primary for): 36 of 38 algorithms and 106 of 171 indexed problems are now runnable (was 13 and 11).
+- Shorthand types `strs`, `floats`, `ll` (linked list) and `tree` (level order with `null`).
+- `algo sh <name>` shows one target's fields, sample, and which problem it runs.
+- `tests/test_problem_targets.py`: every target's sample and every generated library (run with `python -I`).
+
+### Fixed
+
+- `mise run test` (and `test:cov`, `test:watch`) use `uv run`, so pytest comes from the project venv.
+- `algo i -a X ...` and `-o DIR` now work as the first argument.
+- A solver error in `algo r` / `algo pipe` prints one line and exits 1 instead of a traceback.
+- `ci:all` lints `scripts/` like the lint tasks do.
+
 - README rewritten as the **Algo Workbench** project README (install, the four-step solving process,
   command cheat-sheet, verification, layout, development), linking `docs/API.md` for the full spec.
 - `docs/cases/`: five worked examples (topological sort, Dijkstra, top-k, flood fill, coin-change DP), each
