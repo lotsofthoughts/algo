@@ -56,10 +56,12 @@ def lc242_is_anagram(s: str, t: str) -> bool:
 def lc387_first_uniq_char(s: str) -> int:
     """hash-map: count characters, then the first index whose count is 1. O(n), O(1) space.
 
-    Space is O(1) because the alphabet is bounded (26 lowercase letters).
+    `str.count` runs once per *distinct* character (at most 26), so this is O(26 n) = O(n) and
+    the counting happens in C. Iterating `for c in s` instead would call it n times: O(n^2).
     """
-    counts = Counter(s)
-    return next((i for i, c in enumerate(s) if counts[c] == 1), -1)
+    counts = {c: s.count(c) for c in set(s)}
+    gen = (i for i, c in enumerate(s) if counts[c] == 1)
+    return next(gen, -1)
 
 
 def lc49_group_anagrams(strs: list[str]) -> list[list[str]]:
