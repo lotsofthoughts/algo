@@ -21,7 +21,7 @@ problems:
   - { id: 20, title: Valid Parentheses, difficulty: easy, algorithms: [stack], keywords: [matching brackets, balanced, nested], uses: [html and xml tag validation, compiler syntax checks, undo stacks], list: study99 }
   - { id: 21, title: Merge Two Sorted Lists, difficulty: easy, algorithms: [linked-list], keywords: [merge sorted, dummy head], uses: [merge step of merge sort, merging sorted log files, k-way merge of streams], list: study99 }
   - { id: 22, title: Generate Parentheses, difficulty: medium, algorithms: [backtracking], keywords: [valid combinations, balanced parentheses], uses: [generating valid test inputs, grammar enumeration, catalan structure enumeration], list: study99 }
-  - { id: 23, title: Merge k Sorted Lists, difficulty: hard, algorithms: [heap-topk, linked-list], keywords: [k way merge, min heap of heads] }
+  - { id: 23, title: Merge k Sorted Lists, difficulty: hard, algorithms: [heap-topk, linked-list], keywords: [k way merge, min heap of heads, merge many sorted lists, heapq merge], uses: [merge sorted log files from many servers, external sort merge phase, combine sorted results from database shards, time ordered event streams from many sources] }
   - { id: 30, title: Substring with Concatenation of All Words, difficulty: hard, algorithms: [sliding-window, hash-map], keywords: [concatenation of all words, fixed word length, word count window], uses: [multi-keyword search in text, bag-of-words matching, detecting anagram-like token windows], list: study99 }
   - { id: 31, title: Next Permutation, difficulty: medium, algorithms: [two-pointers], keywords: [lexicographic next, permutation order] }
   - { id: 32, title: Longest Valid Parentheses, difficulty: hard, algorithms: [stack, dp-1d], keywords: [longest valid substring, parentheses] }
@@ -52,6 +52,7 @@ problems:
   - { id: 79, title: Word Search, difficulty: medium, algorithms: [backtracking], keywords: [grid path spells word] }
   - { id: 84, title: Largest Rectangle in Histogram, difficulty: hard, algorithms: [monotonic-stack], keywords: [max area bars, next smaller element], uses: [maximal rectangle in binary matrix, skyline problems, span and range queries], list: study99 }
   - { id: 85, title: Maximal Rectangle, difficulty: hard, algorithms: [monotonic-stack, dp-2d], keywords: [largest rectangle of ones, histogram per row] }
+  - { id: 88, title: Merge Sorted Array, difficulty: easy, algorithms: [two-pointers], keywords: [merge two sorted arrays, in place merge, fill from the back, nums1 has extra space], uses: [merge two sorted arrays in place, merge step of merge sort without extra memory, append a sorted batch into a preallocated buffer, combine two sorted price lists] }
   - { id: 94, title: Binary Tree Inorder Traversal, difficulty: easy, algorithms: [tree-dfs], keywords: [left root right] }
   - { id: 96, title: Unique Binary Search Trees, difficulty: medium, algorithms: [dp-1d], keywords: [catalan numbers, count bsts] }
   - { id: 98, title: Validate Binary Search Tree, difficulty: medium, algorithms: [tree-dfs], keywords: [bst bounds, inorder sorted] }

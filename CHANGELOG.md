@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- LeetCode 88 (Merge Sorted Array, two-pointers: fill from the back in place, O(1) extra) and 23 (Merge k
+  Sorted Lists, heap-topk: `heapq.merge` over a `walk()` generator per list, O(N log k)), each with test spec,
+  `uses`, and a runnable `lc-N` target. Both verified against cnkyrpsgl/leetcode.
+- Shorthand type `lls` (list of linked lists: `1,4,5/1,3,4/2,6`), and in-place targets: a solution annotated
+  `-> None` returns its mutated first argument (`algo r 88 1,2,3,0,0,0 3 2,5,6 3` -> `[1, 2, 2, 3, 5, 6]`).
 - LeetCode 387 (First Unique Character in a String, hash-map): verified solution, test spec, `uses`, and a
   runnable `lc-387` target for `run`, `generate`, `inputs`, `shapes` and `uses`. 136 (Single Number) is now
   also indexed under hash-map, with counting keywords ("value whose count is 1"); XOR stays the solution.

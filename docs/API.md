@@ -240,7 +240,9 @@ listed in `docs/study99.md`); a mutated solution is caught within the first few 
 **Running them (`lc-N` targets).** `algo/leetcode/runnable.py` turns each solution into a target. Its schema comes
 from the signature: parameter names are the fields, and annotation strings map to shorthand types (`list[int]` →
 `ints`, `list[str]` → `strs`, `list[float]` → `floats`, `list[list[int]]` → `igrid`, `list[list[str]]` → `cgrid`,
-`ListNode | None` → `ll`, `TreeNode | None` → `tree`, anything else → `any`). The sample is the first catalog hand case.
+`ListNode | None` → `ll`, `list[ListNode | None]` → `lls`, `TreeNode | None` → `tree`, anything else → `any`). A
+solution annotated `-> None` modifies its input in place (LeetCode's contract, e.g. 88), so the target returns its
+first argument after the call (spec `out="arg0"`). The sample is the first catalog hand case.
 Adapters cover the other shapes: design classes take `ops params` (LeetCode's transcript format), 528 takes
 `w picks seed`, 278 takes `n bad`, and SQL problems take `query` and run on the example tables in sqlite. The same
 adapter code is copied into generated libraries, so `algo r lc-N` and `python3 lc<N>_*.py` behave the same.
@@ -271,6 +273,7 @@ SCHEMAS = { ..., "leetcode-1": {"nums": "ints", "target": "int"} }
 | `strs` | `eat,tea,tan` | — |
 | `floats` | `0.5,0.5,0.2` | — |
 | `ll` | `2,4,3` (passed to the solution as a linked list) | as `ints` |
+| `lls` | `1,4,5/1,3,4/2,6` (list of linked lists; an empty row is an empty list) | — |
 | `tree` | `3,9,20,null,null,15,7` (level order, `null` = no node) | — |
 | `any` | `5` · `abc` · `[1, 2]` · `[a: [1, 2], b: [3]]` | — |
 
@@ -366,9 +369,9 @@ but only `algo g <id>` followed by running the generated file proves the file is
 | `add` | `solve_add` | `add` | `a:any` `b:any` | — (not judged) |
 | `deepmerge` | `solve_deepmerge` | `deepmerge` | `a:any` `b:any` | — (not judged) |
 
-### 8.3 Problem → algorithm index (172 problems)
+### 8.3 Problem → algorithm index (173 problems)
 
-50 easy · 98 medium · 24 hard · 99 on the `study99` list (all solved and verified — see [`docs/study99.md`](study99.md) for the per-problem table with other uses), plus 387 solved and verified outside the list. An asterisk (`*`) marks an algorithm that is an
+51 easy · 98 medium · 24 hard · 99 on the `study99` list (all solved and verified — see [`docs/study99.md`](study99.md) for the per-problem table with other uses), plus 23, 88 and 387 solved and verified outside the list. An asterisk (`*`) marks an algorithm that is an
 *alternative* rather than the primary pattern. The non-study99 entries are curated from memory of the commonly cited
 "Top 100 Liked" / Blind 75 / NeetCode sets — **not a snapshot of LeetCode's live ranking**.
 
@@ -383,7 +386,7 @@ but only `algo g <id>` followed by running the generated file proves the file is
 - **`backtracking`** (8) — 17 Letter Combinations of a Phone Number, 22 Generate Parentheses, 39 Combination Sum, 46 Permutations, 51 N-Queens, 78 Subsets, 79 Word Search, 494 Target Sum*
 - **`dp-1d`** (17) — 70 Climbing Stairs, 96 Unique Binary Search Trees, 118 Pascal's Triangle, 139 Word Break, 198 House Robber, 279 Perfect Squares, 300 Longest Increasing Subsequence, 322 Coin Change, 509 Fibonacci Number, 1048 Longest String Chain, 1218 Longest Arithmetic Subsequence of Given Difference, 1911 Maximum Alternating Subsequence Sum, 32 Longest Valid Parentheses*, 53 Maximum Subarray*, 337 House Robber III*, 338 Counting Bits*, 354 Russian Doll Envelopes*
 - **`hash-map`** (28) — 1 Two Sum, 13 Roman to Integer, 49 Group Anagrams, 128 Longest Consecutive Sequence, 146 LRU Cache, 217 Contains Duplicate, 219 Contains Duplicate II, 242 Valid Anagram, 349 Intersection of Two Arrays, 359 Logger Rate Limiter, 383 Ransom Note, 387 First Unique Character in a String, 2913 Subarrays Distinct Element Sum of Squares I, 3 Longest Substring Without Repeating Characters*, 30 Substring with Concatenation of All Words*, 76 Minimum Window Substring*, 105 Construct Binary Tree from Preorder and Inorder Traversal*, 136 Single Number*, 138 Copy List with Random Pointer*, 169 Majority Element*, 202 Happy Number*, 347 Top K Frequent Elements*, 438 Find All Anagrams in a String*, 560 Subarray Sum Equals K*, 904 Fruit Into Baskets*, 1048 Longest String Chain*, 1218 Longest Arithmetic Subsequence of Given Difference*, 3026 Maximum Good Subarray Sum*
-- **`two-pointers`** (12) — 5 Longest Palindromic Substring, 11 Container With Most Water, 15 3Sum, 31 Next Permutation, 42 Trapping Rain Water, 75 Sort Colors, 283 Move Zeroes, 2337 Move Pieces to Obtain a String, 19 Remove Nth Node From End of List*, 160 Intersection of Two Linked Lists*, 349 Intersection of Two Arrays*, 647 Palindromic Substrings*
+- **`two-pointers`** (13) — 5 Longest Palindromic Substring, 11 Container With Most Water, 15 3Sum, 31 Next Permutation, 42 Trapping Rain Water, 75 Sort Colors, 88 Merge Sorted Array, 283 Move Zeroes, 2337 Move Pieces to Obtain a String, 19 Remove Nth Node From End of List*, 160 Intersection of Two Linked Lists*, 349 Intersection of Two Arrays*, 647 Palindromic Substrings*
 - **`fast-slow-pointers`** (6) — 141 Linked List Cycle, 142 Linked List Cycle II, 202 Happy Number, 234 Palindrome Linked List, 287 Find the Duplicate Number, 876 Middle of the Linked List
 - **`prefix-sum`** (8) — 238 Product of Array Except Self, 528 Random Pick with Weight, 560 Subarray Sum Equals K, 1480 Running Sum of 1d Array, 3026 Maximum Good Subarray Sum, 42 Trapping Rain Water*, 437 Path Sum III*, 3886 Sum of Sortable Integers*
 - **`kadane`** (3) — 53 Maximum Subarray, 152 Maximum Product Subarray, 121 Best Time to Buy and Sell Stock*
@@ -414,8 +417,8 @@ but only `algo g <id>` followed by running the generated file proves the file is
 ## 9. Gaps
 
 **Solver coverage.** 36 of 38 algorithms are runnable: 13 through a per-algorithm solver, the rest through a
-per-problem target (§1, §5.1). 107 of the 172 indexed problems are runnable by number: the 99 study-list problems,
-387, plus 33, 79, 210, 684, 743 and 994 via `SOLVERS`. Everything else is *findable* (`.a p`, `.a s`) but not runnable.
+per-problem target (§1, §5.1). 109 of the 173 indexed problems are runnable by number: the 99 study-list problems,
+23, 88, 387, plus 33, 79, 210, 684, 743 and 994 via `SOLVERS`. Everything else is *findable* (`.a p`, `.a s`) but not runnable.
 Algorithms with **no runner**: `two-heaps`, `trie` (no solved problem uses either as its primary pattern).
 Solving one more problem in `algo/leetcode/solutions.py` makes it, and any pattern it is primary for, runnable.
 

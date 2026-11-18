@@ -38,6 +38,7 @@ TYPE_MAP = {
     "list[list[int]]": "igrid",
     "list[list[str]]": "cgrid",
     "ListNode | None": "ll",
+    "list[ListNode | None]": "lls",
     "TreeNode | None": "tree",
 }
 DESIGN_SCHEMA = {"ops": "any", "params": "any"}
@@ -69,16 +70,24 @@ class ProblemTarget:
 
 
 def _invoke(fn: Any, data: dict, kinds: dict[str, str], out: str) -> Any:
-    """Call fn with data's fields in schema order, converting ll/tree fields and ll output."""
+    """Call fn with data's fields in schema order, converting ll/lls/tree fields and the output.
+
+    out "ll" turns a returned list node into a list; "arg0" (in-place problems such as 88)
+    returns the first argument after the call instead of fn's None.
+    """
     args = []
     for name, kind in kinds.items():
         value = data[name]
         if kind == "ll":
             value = to_list_node(value)
+        elif kind == "lls":
+            value = [to_list_node(v) for v in value]
         elif kind == "tree":
             value = to_tree(value)
         args.append(value)
     result = fn(*args)
+    if out == "arg0":
+        return args[0]
     return from_list_node(result) if out == "ll" else result
 
 
@@ -135,7 +144,8 @@ def _target(pid: int, obj: Any, title: str) -> ProblemTarget:
     if any(str(p.annotation).startswith("Callable") for p in sig.parameters.values()):
         return ProblemTarget(pid, title, obj.__name__, "badversion", {"n": "int", "bad": "int"})
     schema = {name: TYPE_MAP.get(str(p.annotation), "any") for name, p in sig.parameters.items()}
-    out = "ll" if str(sig.return_annotation) == "ListNode | None" else ""
+    ret = str(sig.return_annotation)
+    out = {"ListNode | None": "ll", "None": "arg0"}.get(ret, "")  # arg0: in place, show args[0]
     return ProblemTarget(pid, title, obj.__name__, "function", schema, out)
 
 

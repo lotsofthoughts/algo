@@ -124,7 +124,7 @@ algorithms:
     leetcode: { id: 15, title: 3Sum }
     data_structures: [sorted array, string]
     identification: [pair sum in sorted array, in place partition, converge from both ends, remove duplicates in place, palindrome check]
-    uses: [pair with a target sum in a sorted array, remove duplicates in place, reverse a string, check a palindrome, container with most water, three numbers that sum to zero, trapping rain water, sort colors in one pass]
+    uses: [pair with a target sum in a sorted array, merge two sorted arrays in place, remove duplicates in place, reverse a string, check a palindrome, container with most water, three numbers that sum to zero, trapping rain water, sort colors in one pass]
     disqualifiers: [unsorted and cannot sort, need original indices, non contiguous subsequence]
     comparator: exact
   - id: fast-slow-pointers

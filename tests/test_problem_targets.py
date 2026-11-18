@@ -25,7 +25,7 @@ KEYS = sorted(runnable.targets(), key=lambda k: int(k.removeprefix("lc-")))
 def test_every_solution_is_a_target() -> None:
     from algo.leetcode.solutions import by_id
 
-    assert len(KEYS) == len(by_id()) == 100  # the 99 study-list problems + 387
+    assert len(KEYS) == len(by_id()) == 102  # the 99 study-list problems + 23, 88 and 387
 
 
 @pytest.mark.parametrize("key", KEYS)
@@ -81,10 +81,24 @@ def test_resolve_unknown_problem() -> None:
         ("floats", "0.5,0.25", [0.5, 0.25]),
         ("ll", "2,4,3", [2, 4, 3]),
         ("tree", "3,9,null,7", [3, 9, None, 7]),
+        ("lls", "1,4,5/1,3,4/2,6", [[1, 4, 5], [1, 3, 4], [2, 6]]),
+        ("lls", "10/", [[10], []]),  # multi-digit single values; empty row = empty list
     ],
 )
 def test_new_shorthand_types(kind: str, token: str, value: object) -> None:
     assert parse_value(kind, token, rng()) == value
+
+
+def test_in_place_problem_returns_its_first_argument() -> None:
+    t = runnable.targets()["lc-88"]
+    assert t.out == "arg0"
+    got = runnable.run("lc-88", {"nums1": [4, 5, 0, 0], "m": 2, "nums2": [1, 6], "n": 2})
+    assert got == [1, 4, 5, 6]
+
+
+def test_list_of_linked_lists_schema() -> None:
+    assert runnable.targets()["lc-23"].schema == {"lists": "lls"}
+    assert runnable.run("lc-23", {"lists": [[2, 9], [], [1, 3, 10]]}) == [1, 2, 3, 9, 10]
 
 
 def test_build_input_with_derived_schema() -> None:

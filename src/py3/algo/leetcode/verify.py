@@ -101,6 +101,8 @@ def prepare(args: Args, spec: Spec, for_ref: bool) -> Args:
         kind = spec.kinds[i] if i < len(spec.kinds) else ""
         if kind == "ll":
             a = to_list_node(a)  # noqa: PLW2901
+        elif kind == "lls":
+            a = [to_list_node(x) for x in a]  # noqa: PLW2901
         elif kind == "tree":
             a = to_tree(a)  # noqa: PLW2901
         elif kind == "intervals" and for_ref:
@@ -119,6 +121,14 @@ def run_design(
     return [None] + [getattr(obj, op)(*p) for op, p in zip(ops[1:], params[1:], strict=True)]
 
 
+def _result(spec: Spec, fn: Callable[..., Any], args: Args) -> Any:
+    """Call fn; normalise linked-list output, or return args[0] for in-place problems (88)."""
+    out = fn(*args)
+    if spec.out == "arg0":
+        return args[0]
+    return from_list_node(out) if spec.out == "ll" else out
+
+
 def call_ours(pid: int, spec: Spec, args: Args) -> Any:
     """Run our solution on args, normalising linked-list output."""
     fn = solutions.by_id()[pid]
@@ -127,8 +137,7 @@ def call_ours(pid: int, spec: Spec, args: Args) -> Any:
     if spec.kinds[:1] == ("badversion",):
         n, bad = args
         return fn(n, lambda v: v >= bad)
-    out = fn(*prepare(args, spec, for_ref=False))
-    return from_list_node(out) if spec.out == "ll" else out
+    return _result(spec, fn, prepare(args, spec, for_ref=False))
 
 
 def call_ref(ns: dict[str, Any], spec: Spec, args: Args) -> Any:
@@ -139,8 +148,7 @@ def call_ref(ns: dict[str, Any], spec: Spec, args: Args) -> Any:
         n, bad = args
         ns["isBadVersion"] = lambda v: v >= bad
         return ref_method(ns)(n)
-    out = ref_method(ns)(*prepare(args, spec, for_ref=True))
-    return from_list_node(out) if spec.out == "ll" else out
+    return _result(spec, ref_method(ns), prepare(args, spec, for_ref=True))
 
 
 def same(spec: Spec, args: Args, a: Any, b: Any) -> bool:
