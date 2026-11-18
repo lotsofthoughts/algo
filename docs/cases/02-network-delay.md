@@ -49,7 +49,7 @@ dijkstra         times:wedges n:int k:int
 $ .a i 2-1:1,2-3:1,3-4:1 4 2 dijkstra
 generated /tmp/algo-demo/dijkstra.py
 /tmp/algo-demo/inputs.py
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 2
 ```
 

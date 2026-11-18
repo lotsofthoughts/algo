@@ -31,8 +31,9 @@ The path from "I have a problem" to a running solution:
 ```
 algo p "two sum"        # problem -> algorithm(s):   1  Two Sum  easy  -> hash-map
 algo s hash-map -p      # algorithm -> its identifying phrases and example problems
-algo g hash-map         # writes $TMPDIR/hash_map.py   (importable: from hash_map import solve)
-algo i 2,7,11,15 9 hash-map && python3 $TMPDIR/inputs.py     # -> [0, 1]
+algo g hash-map         # writes ./hash_map.py   (importable: from hash_map import solve)
+algo g hash-map -p      # prints that code instead; writes nothing
+algo i 2,7,11,15 9 hash-map && python3 inputs.py     # -> [0, 1]
 ```
 
 **How an algorithm finds its solver.** The registry entry's `leetcode: { id: N, ... }` field decides it:
@@ -56,15 +57,15 @@ a unique prefix such as `koko`) → fuzzy algorithm match. Multi-word names need
 
 `algo` is the shell function from `shell/bootstrap.sh`; `.a` is its alias (in zsh, `.a` is
 `noglob algo`, so `[a: [1, 2]]` is not glob-expanded). Env: `ALGO_HOME` (install root),
-`ALGO_LANG` (`py3` default), `ALGO_TMP` (output dir; default `$TMPDIR`).
+`ALGO_LANG` (`py3` default), `ALGO_TMP` (output dir; default the current directory).
 
 | Command (alias) | Purpose | Example |
 |---|---|---|
 | `search` (`s`) | Find **algorithms**. Plain `id  name` list; `-j` full JSON; `-p` also list example problems; `--top N`. | `.a s graph` · `.a s bfs -p` |
 | | Search only by symptoms / only by disqualifiers. | `.a s --id "shortest path"` · `.a s --disqualifier "negative weights"` |
 | `problems` (`p`) | Find **problems** by title, number, keywords or uses → algorithms. `-a ALGO` filters; `-l study99` limits to a list; `-u` prints other uses; `-j` JSON; no query lists all. `*` after the id = verified solution exists. | `.a p "two sum"` · `.a p 200` · `.a p -a dijkstra` · `.a p 875 -u` |
-| `generate` (`g`) | Write the algorithm library `$TMPDIR/<id>.py` (importable; also runnable on its sample). A problem target writes a standalone `lc<N>_<name>.py` with its helpers and node types inlined. `-o DIR`. | `.a g bfs` · `.a g 2812` |
-| `inputs` (`i`) | Write `$TMPDIR/inputs.py` that imports the library and calls `solve(...)`. Generates the library first if missing (never overwrites). Target = last bare word or `-a` (a bare number at the end is a value: use `lc-N` or `-a N`). | `.a i 1 2 add` · `.a i -a 875 3,6,7,11 8` |
+| `generate` (`g`) | Write the algorithm library `<id>.py` (importable; also runnable on its sample). A problem target writes a standalone `lc<N>_<name>.py` with its helpers and node types inlined. `-o DIR` (default `$ALGO_TMP`, else the cwd); `-p` prints the code to stdout and writes nothing. | `.a g bfs` · `.a g 2812` · `.a g bfs -p \| less` |
+| `inputs` (`i`) | Write `inputs.py` (same output dir as `generate`) that imports the library and calls `solve(...)`. Generates the library first if missing (never overwrites). Target = last bare word or `-a` (a bare number at the end is a value: use `lc-N` or `-a N`). | `.a i 1 2 add` · `.a i -a 875 3,6,7,11 8` |
 | `run` (`r`) | Run in-process with shorthand input, no files. Chain stages with `then`; `_` = previous output. A solver error prints one line and exits 1. | `.a r topo 4 1-0,2-0 then binary-search _ target=2` · `.a r 22 3 then 14 _` |
 | `shapes` (`sh`) | Show each solver's input fields and types; with a name, one target's fields, sample, and which problem it runs. | `.a sh` · `.a sh 875` |
 | `pipe` | JSON in → solver → JSON out, for pipelines. Input from `--input FILE`, piped stdin, or the sample case when stdin is a terminal. | `.a pipe leetcode-347 -i in.json \| .a assert --expected out.json --comparator unordered-array` |
@@ -284,7 +285,7 @@ Adding *Two Sum* took exactly these steps (all of it is in the repo):
 3. **Solver** — `leetcode_1` in `solutions.py`, registered as `"leetcode-1"` in `SOLVERS` (§5).
 4. **Schema** — `"leetcode-1": {"nums": "ints", "target": "int"}` in `SCHEMAS` (§6).
 5. **Case** — `cases/leetcode-1/case-1.{input,expected}.json`, plus the `TARGETS` entry and, for the record, a line in `problem-targets.yml`.
-6. **Verify** — `algo check`, then `algo judge leetcode-1`, then `algo i 2,7,11,15 9 hash-map && python3 $TMPDIR/inputs.py`.
+6. **Verify** — `algo check`, then `algo judge leetcode-1`, then `algo i 2,7,11,15 9 hash-map && python3 inputs.py`.
 7. **Reinstall** — `mise run pack` rebuilds `dist/` (the bundle includes `registry/`, `py3/`, `cases/`, `shell/`).
 
 A non-LeetCode utility (`add`) is the same minus the case files: registry entry with no `leetcode:` field,

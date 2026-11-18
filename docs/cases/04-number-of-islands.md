@@ -47,7 +47,7 @@ Oranges, 2812 Safest Path). It only asks for a count, so:
 $ .a i 11000/11000/00100/00011 dfs
 generated /tmp/algo-demo/dfs.py
 /tmp/algo-demo/inputs.py
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 3
 ```
 

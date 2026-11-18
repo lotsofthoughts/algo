@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `algo g -p` / `--print`: print the generated library to stdout instead of writing a file.
 - **Every solved problem is runnable:** `lc-N` targets for all 99 study-list solutions in `generate`, `inputs`,
   `run`, `pipe` and `shapes` (`algo r 875 3,6,7,11 8`, `algo g 2812`). Schemas are derived from each solution's
   signature; design, SQL, 278 and 528 have adapters. Problems resolve by number, `lc-N` or title.
@@ -17,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shorthand types `strs`, `floats`, `ll` (linked list) and `tree` (level order with `null`).
 - `algo sh <name>` shows one target's fields, sample, and which problem it runs.
 - `tests/test_problem_targets.py`: every target's sample and every generated library (run with `python -I`).
+
+### Changed
+
+- `algo g` and `algo i` write to the current directory by default (was the system temp dir);
+  `$ALGO_TMP` and `-o DIR` still override it.
 
 ### Fixed
 
@@ -46,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `algo g -p` / `--print`: print the generated library to stdout instead of writing a file.
 - Initial template release
 - UV package management with `uv sync`
 - Ruff linting and formatting configuration

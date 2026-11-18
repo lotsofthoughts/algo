@@ -5,8 +5,9 @@ Subcommands (full spec in docs/API.md §2):
 
     problems (p)   problem title / number / keywords / use case -> algorithms
     search   (s)   algorithms by name, identification phrase or disqualifier
-    generate (g)   write the importable library $ALGO_TMP/<id>.py
-    inputs   (i)   write $ALGO_TMP/inputs.py that calls the library on shorthand values
+    generate (g)   write the importable library <id>.py (`-p` prints it instead)
+    inputs   (i)   write inputs.py that calls the library on shorthand values
+                   (files go to -o DIR, else $ALGO_TMP, else the current directory)
     run      (r)   run in-process; chain stages with `then`, `_` = previous output
                    (targets: an algorithm, a solver key, or a problem: 875 / lc-875 / "koko")
     shapes   (sh)  input fields and types per solver (`algo sh 875` for one problem)
@@ -368,10 +369,15 @@ def schema_for(target: str) -> dict[str, str]:
 
 
 def tmp_dir(arg: str | None = None) -> pathlib.Path:
-    """Output directory: arg, $ALGO_TMP, or the system temp dir (created if needed)."""
-    import tempfile
+    """Output directory: arg, $ALGO_TMP, or the current directory (created if needed).
 
-    d = pathlib.Path(arg or os.environ.get("ALGO_TMP") or tempfile.gettempdir())
+    Args:
+        arg: An explicit `-o DIR`, or None.
+
+    Returns:
+        The absolute output directory.
+    """
+    d = pathlib.Path(arg or os.environ.get("ALGO_TMP") or pathlib.Path.cwd()).resolve()
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -493,12 +499,28 @@ def lib_path(item: Item, outdir: pathlib.Path) -> pathlib.Path:
 
 def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
     """Write the importable algorithm library <id>.py into outdir; return its path."""
+    path = lib_path(item, outdir)
+    path.write_text(library_text(item, target, path))
+    return path
+
+
+def library_text(item: Item, target: str, path: pathlib.Path) -> str:
+    """Source of the standalone library for target, as it would be written to path.
+
+    Args:
+        item: The registry item the target was resolved from.
+        target: A solver key (leetcode-N) or a per-problem target (lc-N).
+        path: Where the file lives (or would live); quoted in its docstring.
+
+    Returns:
+        The complete, runnable Python source.
+    """
     import inspect
 
     from algo import solutions
 
     if target.startswith("lc-"):
-        return _generate_problem_lib(item, target, outdir)
+        return _problem_library_text(item, target, path)
     fn = SOLVERS[target]
     parts = [inspect.getsource(getattr(solutions, h)) for h in HELPERS.get(target, [])] + [
         inspect.getsource(fn)
@@ -508,8 +530,7 @@ def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
         if item.get("leetcode_id")
         else ""
     )
-    path = lib_path(item, outdir)
-    src = (
+    return (
         f'"""{item.get("name")} — {item["id"]}{lc}\n'
         f"Import:  from {path.stem} import solve      solve({{...}}) -> result\n"
         f'Run:     python3 {path} [input.json]        (default: sample below)\n"""\n'
@@ -522,26 +543,26 @@ def generate_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
         "    data = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else SAMPLE\n"
         "    print(json.dumps(solve(data), default=repr))\n"
     )
-    path.write_text(src)
-    return path
 
 
-def _generate_problem_lib(item: Item, target: str, outdir: pathlib.Path) -> pathlib.Path:
-    """Write a standalone library for a per-problem target (helpers and node types inlined)."""
+def _problem_library_text(item: Item, target: str, path: pathlib.Path) -> str:
+    """Standalone library source for a per-problem target (helpers and node types inlined)."""
     from algo.leetcode import runnable
 
     t = runnable.targets()[target]
-    path = lib_path(item, outdir)
     title = f"{t.title} — {t.key} (LeetCode {t.pid})"
     if item["id"] != t.key:
         title = f"{item.get('name')} — {item['id']} (LeetCode {t.pid}: {t.title})"
-    path.write_text(runnable.library_source(target, title, str(path)))
-    return path
+    return runnable.library_source(target, title, str(path))
 
 
 def cmd_generate(args: argparse.Namespace) -> None:
-    """Write an algorithm's importable library file and print its path."""
+    """Write an algorithm's importable library file and print its path (`-p`: print the code)."""
     item, target = pick(" ".join(args.query))
+    if args.print:  # nothing is written; the docstring names where `algo g` would put it
+        outdir = pathlib.Path(args.out_dir or os.environ.get("ALGO_TMP") or pathlib.Path.cwd())
+        sys.stdout.write(library_text(item, target, lib_path(item, outdir.resolve())))
+        return
     print(generate_lib(item, target, tmp_dir(args.out_dir)))
 
 
@@ -1028,7 +1049,10 @@ def _add_build_commands(sub: Any) -> None:
     """Register generate, run, inputs, check, complete, shapes and targets."""
     g = sub.add_parser("generate", aliases=["g"])
     g.add_argument("query", nargs="+", help="algorithm id or name, e.g. bfs")
-    g.add_argument("-o", "--out-dir", help="output dir (default: $ALGO_TMP or $TMPDIR)")
+    g.add_argument("-o", "--out-dir", help="output dir (default: $ALGO_TMP, else the cwd)")
+    g.add_argument(
+        "-p", "--print", action="store_true", help="print the library to stdout; write nothing"
+    )
     g.set_defaults(func=cmd_generate)
     r = sub.add_parser("run", aliases=["r"])
     r.add_argument("tokens", nargs=argparse.REMAINDER, help="<algo> [values...] [then <algo> ...]")
@@ -1043,7 +1067,9 @@ def _add_build_commands(sub: Any) -> None:
     # -a/-o are declared so they also work as the first token (REMAINDER can't start with a flag);
     # later in the line they are pulled out of `tokens` by cmd_inputs.
     inp.add_argument("-a", "--algo", dest="algo_opt", help="algorithm or problem (875, lc-875)")
-    inp.add_argument("-o", "--out-dir", dest="out_opt", help="output dir")
+    inp.add_argument(
+        "-o", "--out-dir", dest="out_opt", help="output dir (default: $ALGO_TMP, else the cwd)"
+    )
     inp.add_argument(
         "tokens", nargs=argparse.REMAINDER, help="<values...> [<algo>] [-a algo] [-o dir]"
     )

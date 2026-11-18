@@ -72,7 +72,7 @@ if __name__ == "__main__":
 ```
 
 ```console
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 [0, 1, 2, 3]
 ```
 

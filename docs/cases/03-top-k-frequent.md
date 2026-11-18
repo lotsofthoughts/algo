@@ -44,7 +44,7 @@ nothing. Here only `k` are needed and order doesn't matter, so a size-k heap ove
 $ .a i 1,1,1,2,2,3 2 heap-topk
 generated /tmp/algo-demo/heap_topk.py
 /tmp/algo-demo/inputs.py
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 [1, 2]
 ```
 

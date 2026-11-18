@@ -34,7 +34,7 @@ Requirements: `python3` (3.12+). Nothing else at runtime.
 | Env var | Default | Meaning |
 | --- | --- | --- |
 | `ALGO_HOME` | the repo's `src/` | Install root |
-| `ALGO_TMP` | `$TMPDIR` | Where `generate` / `inputs` write files |
+| `ALGO_TMP` | the current directory | Where `generate` / `inputs` write files (`-o DIR` overrides) |
 | `ALGO_LANG` | `py3` | `go` runs the experimental Go backend (10 solvers, `solve` only) |
 
 ---
@@ -47,7 +47,7 @@ Every problem goes through the same four steps. Each has one command.
 | --- | --- | --- |
 | **1. Identify** | Which problem is this, and what pattern does it use? | `.a p "<title, number, keywords or use case>"` |
 | **2. Judge** | Is that pattern right *here*? What signals it, what rules it out? | `.a s -j --id "<symptoms>"` · `.a s --disqualifier "<constraint>"` |
-| **3. Solve** | Give me the code, run on my inputs. | `.a i <values...> <algo>` → `python3 $TMPDIR/inputs.py` |
+| **3. Solve** | Give me the code, run on my inputs. | `.a i <values...> <algo>` → `python3 inputs.py` |
 | **4. Chain** | Feed the answer into the next algorithm. | `.a r <algo> <values> then <algo> _ ...` |
 
 ```console
@@ -60,7 +60,7 @@ $ .a s -j --id "dependencies ordering" --top 1        # matched: ["dependencies"
 $ .a i 4 1-0,2-0,3-1,3-2 topo                         # writes the library + inputs.py
 generated /tmp/algo-demo/topological_sort.py
 /tmp/algo-demo/inputs.py
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 [0, 1, 2, 3]
 
 $ .a r topo 4 1-0,2-0,3-1,3-2 then binary-search _ target=3
@@ -80,8 +80,8 @@ Five complete walkthroughs (topological sort, Dijkstra, top-k, flood fill, coin-
 | --- | --- | --- |
 | `p` | Problem → algorithms. `*` = verified solution. `-u` other uses, `-l study99`, `-a ALGO`, `-j` | `.a p 875 -u` |
 | `s` | Find algorithms. `--id` symptoms, `--disqualifier` constraints, `-p` example problems, `-j` | `.a s bfs -p` |
-| `g` | Write the importable library `$TMPDIR/<id>.py` | `.a g dijkstra` · `.a g 2812` |
-| `i` | Write `$TMPDIR/inputs.py` that calls the library on your values | `.a i 1,2,5 11 coin-change` |
+| `g` | Write the importable library `<id>.py` (to the cwd); `-p` prints it instead, writing nothing | `.a g dijkstra` · `.a g 2812 -p` |
+| `i` | Write `inputs.py` (to the cwd) that calls the library on your values | `.a i 1,2,5 11 coin-change` |
 | `r` | Run in-process, no files; `then` chains, `_` = previous output | `.a r top-k 5,5,1 1 then coin-change _ 11` |
 | `sh` | Input fields and types per algorithm, or for one target | `.a sh` · `.a sh 875` |
 | `pipe` / `assert` / `judge` | JSON in → JSON out, compare, judge a sample | `.a judge leetcode-322` |

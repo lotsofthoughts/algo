@@ -41,18 +41,18 @@ is optimal. So DP: `dp[a] = min(dp[a - c] + 1)` over coins `c`, O(amount × coin
 $ .a i 1,2,5 11 coin-change
 generated /tmp/algo-demo/dp_1d.py
 /tmp/algo-demo/inputs.py
-$ python3 $TMPDIR/inputs.py
+$ python3 $ALGO_TMP/inputs.py
 3
 ```
 
 The generated library stands alone. Run it on its sample, on a JSON file, or import it:
 
 ```console
-$ python3 $TMPDIR/dp_1d.py
+$ python3 $ALGO_TMP/dp_1d.py
 3
-$ echo '{"coins":[1,5,10,25],"amount":63}' > c.json && python3 $TMPDIR/dp_1d.py c.json
+$ echo '{"coins":[1,5,10,25],"amount":63}' > c.json && python3 $ALGO_TMP/dp_1d.py c.json
 6
-$ python3 -c "import sys; sys.path.insert(0, '$TMPDIR'); from dp_1d import solve; print(solve({'coins':[2],'amount':3}))"
+$ python3 -c "import sys; sys.path.insert(0, '$ALGO_TMP'); from dp_1d import solve; print(solve({'coins':[2],'amount':3}))"
 -1
 ```
 
