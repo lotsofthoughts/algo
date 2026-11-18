@@ -27,11 +27,29 @@ def test_shapes_word_filters(capsys: pytest.CaptureFixture) -> None:
     assert ids == ["topological-sort", "cyclic-sort", "sorting"]
 
 
-@pytest.mark.parametrize(("query", "first"), [("875", "lc-875"), ("koko", "lc-875")])
+@pytest.mark.parametrize(
+    ("query", "first"),
+    [
+        ("875", "lc-875"),
+        ("koko", "lc-875"),
+        ("single number", "lc-136"),  # a title beats loose tag matches
+        ("first unique", "lc-387"),  # unique title prefix
+    ],
+)
 def test_shapes_single_target_detail(capsys: pytest.CaptureFixture, query: str, first: str) -> None:
     out = shapes(capsys, query)
     assert out[0].split()[0] == first
     assert any("sample:" in line for line in out)
+
+
+def test_shapes_graph_category_still_filters(capsys: pytest.CaptureFixture) -> None:
+    ids = [line.split()[0] for line in shapes(capsys, "graph")]
+    assert {"dfs", "bfs", "dijkstra"} <= set(ids)
+
+
+def test_single_number_is_also_a_counting_problem() -> None:
+    p136 = next(p for p in PROBLEMS if p["id"] == 136)
+    assert p136["algorithms"] == ["bit-manipulation", "hash-map"]  # XOR optimal; counting works
 
 
 def test_every_algorithm_has_uses() -> None:
@@ -56,6 +74,9 @@ def test_tokens_fold_synonyms_stems_and_stopwords() -> None:
         ("fewest coins to make change", "dp-1d", 322),
         ("course prerequisites order", "topological-sort", None),
         ("merge overlapping meetings", "intervals", 56),
+        ("first unique character in a string", "hash-map", 387),
+        ("first non repeating event in a log", "hash-map", 387),
+        ("find the value whose count is 1", "bit-manipulation", 136),
     ],
 )
 def test_need_finds_optimal_algorithm(need: str, algo: str, problem: int | None) -> None:

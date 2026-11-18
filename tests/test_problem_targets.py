@@ -23,7 +23,9 @@ KEYS = sorted(runnable.targets(), key=lambda k: int(k.removeprefix("lc-")))
 
 
 def test_every_solution_is_a_target() -> None:
-    assert len(KEYS) == 99
+    from algo.leetcode.solutions import by_id
+
+    assert len(KEYS) == len(by_id()) == 100  # the 99 study-list problems + 387
 
 
 @pytest.mark.parametrize("key", KEYS)

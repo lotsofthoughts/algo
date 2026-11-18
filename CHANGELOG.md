@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- LeetCode 387 (First Unique Character in a String, hash-map): verified solution, test spec, `uses`, and a
+  runnable `lc-387` target for `run`, `generate`, `inputs`, `shapes` and `uses`. 136 (Single Number) is now
+  also indexed under hash-map, with counting keywords ("value whose count is 1"); XOR stays the solution.
+- `algo sh <problem title>` (e.g. `algo sh single number`) shows that problem instead of loose tag matches.
 - `algo uses` (`u`): common real-world uses for every algorithm; `algo u <need>` (e.g. "shortest distance
   between two zip codes") ranks the algorithms that fit and lists the problems each is the optimal pattern
   for. Backed by a new required `uses` field on all 38 registry entries (`algo check` enforces it).

@@ -958,6 +958,12 @@ SPECS: dict[int, Spec] = {
         expect=[False, False, True],
         gen=lambda r: (word(r, (0, 4)), word(r, (0, 6))),
     ),
+    387: Spec(
+        cases=[("leetcode",), ("loveleetcode",), ("aabb",), ("z",), ("",)],
+        expect=[0, 2, -1, 0, -1],
+        gen=lambda r: (word(r, (0, 10), "abcd"),),
+        oracle=lambda s: next((i for i, c in enumerate(s) if s.count(c) == 1), -1),
+    ),
     410: Spec(
         cases=[([7, 2, 5, 10, 8], 2), ([1, 2, 3, 4, 5], 2)],
         expect=[18, 9],

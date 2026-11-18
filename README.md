@@ -4,7 +4,7 @@
 > from one shell command. Stdlib-only Python, offline, YAML-driven.
 
 An interview-prep workbench that maps problems to algorithms and turns any algorithm into a runnable,
-importable Python file in seconds. 38 algorithm patterns, 171 indexed LeetCode problems, and a
+importable Python file in seconds. 38 algorithm patterns, 172 indexed LeetCode problems, and a
 99-problem study list where every problem has a solution verified against an independent reference.
 
 - **Full CLI spec:** [docs/API.md](docs/API.md)
@@ -19,7 +19,7 @@ importable Python file in seconds. 38 algorithm patterns, 171 indexed LeetCode p
 
 ```bash
 source src/shell/bootstrap.sh      # or: source src/shell/bootstrap.fish
-algo check                         # 38 algorithms, 171 problems (99 with verified solutions) ... OK
+algo check                         # 38 algorithms, 172 problems (100 with verified solutions) ... OK
 ```
 
 This defines `algo` and its alias `.a` (in zsh `.a` is `noglob algo`, so `[a: [1, 2]]` isn't globbed) and
@@ -90,7 +90,7 @@ Five complete walkthroughs (topological sort, Dijkstra, top-k, flood fill, coin-
 | `check` | Validate registry ↔ problems ↔ solvers ↔ schemas ↔ cases | `.a check` |
 
 **Targets** are algorithms (`dijkstra`), solver keys (`leetcode-743`), or any of the 99 solved problems by number,
-`lc-N` or title (`875`, `lc-875`, `koko`, `"trapping rain water"`). 36 of 38 algorithms and 106 of 171 indexed problems run.
+`lc-N` or title (`875`, `lc-875`, `koko`, `"trapping rain water"`). 36 of 38 algorithms and 107 of 172 indexed problems run.
 
 ```console
 $ .a r 875 3,6,7,11 8                          # Koko Eating Bananas

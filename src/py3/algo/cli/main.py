@@ -966,7 +966,11 @@ def cmd_shapes(args: argparse.Namespace) -> None:
         print(f"(+ {len(solved_ids())} problem targets lc-N: algo sh <problem>, e.g. algo sh 875)")
         return
     q = " ".join(args.query)
-    if q in SOLVERS or _problem_id(q) is not None:
+    named = any(
+        _norm(q).strip() in _norm(i.get(f, "")) for i in reg for f in ("id", "name", "category")
+    )
+    # A problem number, solver key or title ("single number") beats loose tag matches.
+    if q in SOLVERS or _problem_id(q) is not None or (not named and _title_match(q)):
         _shape_detail(*pick(q))
         return
     matches = filter_algorithms(q, reg)
