@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- CodeQL `py/cyclic-import` (9 alerts): the registry loaders moved from `algo.cli.main` to `algo.registry`,
+  so `algo.leetcode.runnable` no longer imports the CLI module.
 - `mise run test` (and `test:cov`, `test:watch`) use `uv run`, so pytest comes from the project venv.
 - `algo i -a X ...` and `-o DIR` now work as the first argument.
 - A solver error in `algo r` / `algo pipe` prints one line and exits 1 instead of a traceback.

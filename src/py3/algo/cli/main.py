@@ -16,8 +16,8 @@ Subcommands (full spec in docs/API.md §2):
     verify         differential-test the per-problem solutions (algo.leetcode.verify)
     check          cross-validate registry, problems, solvers, schemas and cases
 
-Data lives in registry/*.yml (parsed with small regex loaders, no PyYAML) and solvers in
-algo.solutions. Stdlib only, so it runs from the offline installer (scripts/algopack.py).
+Data lives in registry/*.yml (parsed by algo.registry: small regex loaders, no PyYAML) and
+solvers in algo.solutions. Stdlib only, so it runs from the offline installer (scripts/algopack.py).
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ import sys
 from typing import TYPE_CHECKING, Any, NoReturn
 
 from algo.judge.comparators import COMPARATORS
+from algo.registry import Item, load_problems, load_registry
 from algo.solutions import SOLVERS
 
 if TYPE_CHECKING:
@@ -37,11 +38,8 @@ if TYPE_CHECKING:
 
     from algo.leetcode.runnable import ProblemTarget
 
-Item = dict[str, Any]  # a registry entry or a problem row
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
-REGISTRY = ROOT / "registry" / "algorithms.yml"
-PROBLEMS = ROOT / "registry" / "problems.yml"
 TARGETS = {
     "leetcode-1": (
         "unordered-array",
@@ -101,42 +99,6 @@ TARGETS = {
 }
 
 
-def load_registry() -> list[Item]:
-    """Parse algorithms.yml with a tiny regex parser (stdlib only, so it ships in the installer)."""
-    import re
-
-    text = REGISTRY.read_text()
-    blocks = re.split(r"\n  - id: ", text)
-    items = []
-    for block in blocks[1:]:
-        lines = block.splitlines()
-        item = {"id": lines[0].strip()}
-        for line in lines[1:]:
-            s = line.strip()
-            if s.startswith("name:"):
-                item["name"] = s[5:].strip()
-            elif s.startswith("leetcode:"):
-                m = re.search(r"id:\s*(\d+),\s*title:\s*(.*?)\s*}", s)
-                if m:
-                    item["leetcode_id"] = int(m.group(1))
-                    item["leetcode_title"] = m.group(2)
-            elif s.startswith("category:"):
-                item["category"] = s[9:].strip()
-            elif s.startswith("data_structures:"):
-                item["data_structures"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
-            elif s.startswith("identification:"):
-                item["identification"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
-            elif s.startswith("disqualifiers:"):
-                item["disqualifiers"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
-            elif s.startswith("uses:"):
-                item["uses"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
-        for k in ("data_structures", "identification", "disqualifiers", "uses"):
-            if k in item:
-                item[k] = [x for x in item[k] if x]
-        items.append(item)
-    return items
-
-
 def read_json(path: str | None) -> Any:
     """Load JSON from `path`, or from stdin when no path is given."""
     if path:
@@ -158,34 +120,6 @@ def cmd_pipe(args: argparse.Namespace) -> None:
             data = sample_for(target)
             print("(no --input and no piped stdin: using the sample case)", file=sys.stderr)
     print(json.dumps(run_solver(item, target, data), default=repr))
-
-
-def load_problems() -> list[Item]:
-    """Parse problems.yml (one flow mapping per line) into dicts."""
-    import re
-
-    pat = re.compile(
-        r"id:\s*(\d+),\s*title:\s*(.*?),\s*difficulty:\s*(\w+),"
-        r"\s*algorithms:\s*\[(.*?)\],\s*keywords:\s*\[(.*?)\]"
-    )
-    out = []
-    for line in PROBLEMS.read_text().splitlines():
-        m = pat.search(line)
-        if m:
-            out.append(
-                {
-                    "id": int(m[1]),
-                    "title": m[2],
-                    "difficulty": m[3],
-                    "algorithms": [x.strip() for x in m[4].split(",") if x.strip()],
-                    "keywords": [x.strip() for x in m[5].split(",") if x.strip()],
-                }
-            )
-            u = re.search(r"uses:\s*\[(.*?)\]", line)
-            tag = re.search(r"list:\s*([\w-]+)", line)
-            out[-1]["uses"] = [x.strip() for x in u[1].split(",") if x.strip()] if u else []
-            out[-1]["list"] = tag[1] if tag else None
-    return out
 
 
 def solved_ids() -> set[int]:

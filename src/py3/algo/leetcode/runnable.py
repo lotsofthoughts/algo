@@ -126,7 +126,7 @@ ADAPTERS = [_invoke, _replay, _picks, _bad_version, _sql]
 
 
 def _titles() -> dict[int, str]:
-    from algo.cli.main import load_problems
+    from algo.registry import load_problems
 
     return {p["id"]: p["title"] for p in load_problems()}
 
