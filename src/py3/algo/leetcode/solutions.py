@@ -53,6 +53,17 @@ def lc242_is_anagram(s: str, t: str) -> bool:
     return Counter(s) == Counter(t)
 
 
+def lc387_first_uniq_char(s: str) -> int:
+    """hash-map: count characters, then the first index whose count is 1. O(n), O(1) space.
+
+    `str.count` runs once per *distinct* character (at most 26), so this is O(26 n) = O(n) and
+    the counting happens in C. Iterating `for c in s` instead would call it n times: O(n^2).
+    """
+    counts = {c: s.count(c) for c in set(s)}
+    gen = (i for i, c in enumerate(s) if counts[c] == 1)
+    return next(gen, -1)
+
+
 def lc49_group_anagrams(strs: list[str]) -> list[list[str]]:
     """hash-map: group by sorted-letters key. O(n k log k)."""
     groups: dict[str, list[str]] = defaultdict(list)
@@ -1105,7 +1116,11 @@ def lc3644_sort_permutation(nums: list[int]) -> int:
 
 
 def lc136_single_number(nums: list[int]) -> int:
-    """bit-manipulation: XOR cancels pairs. O(n), O(1) space."""
+    """bit-manipulation: XOR cancels pairs. O(n), O(1) space.
+
+    The hash-map version, `next(x for x, c in Counter(nums).items() if c == 1)`, is also O(n) but
+    needs O(n) space; XOR is optimal because the other values appear exactly twice.
+    """
     out = 0
     for x in nums:
         out ^= x

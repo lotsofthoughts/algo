@@ -115,7 +115,7 @@ algorithms:
     leetcode: { id: 1, title: Two Sum }
     data_structures: [hash map, set, array]
     identification: [pair sum, complement lookup, frequency count, group by key, duplicates, membership check]
-    uses: [find two numbers that add up to a target, deduplicate records by key, count word frequencies, group anagrams, cache lookups, detect duplicates in a list, join two datasets on a key, lru cache]
+    uses: [find two numbers that add up to a target, find the first non repeating character in a string, find the value that appears exactly once, deduplicate records by key, count word frequencies, group anagrams, cache lookups, detect duplicates in a list, join two datasets on a key, lru cache]
     disqualifiers: [need sorted order, memory constrained, need range queries]
     comparator: exact
   - id: two-pointers
