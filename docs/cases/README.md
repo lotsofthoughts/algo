@@ -7,7 +7,7 @@ against the workbench as shipped (`ALGO_TMP=/tmp/algo-demo`); your paths will di
 | --- | --- | --- |
 | **1. Identification** | Search for the problem by title, number, keywords or a use case. The first algorithm listed is the primary pattern. | `.a p "<query>"` |
 | **2. Judging** | Check the pattern against the problem: which identification phrases match, and which disqualifiers would rule it out. | `.a s -j --id "<symptoms>"` · `.a s --disqualifier "<constraint>"` |
-| **3. Solving** | Generate the library and an `inputs.py` wired to your values, then run it. `.a sh` shows each algorithm's fields. | `.a i <values...> <algo>` · `python3 $TMPDIR/inputs.py` |
+| **3. Solving** | Generate the library and an `inputs.py` wired to your values, then run it. `.a sh` shows each algorithm's fields. | `.a i <values...> <algo>` · `python3 inputs.py` |
 | **4. Chaining** | Feed the output into another algorithm. `_` is the previous output; with no `_`, it binds to the first empty field it fits. | `.a r <algo> <values> then <algo> _ ...` |
 
 | # | Case | Pattern | Chained into |
