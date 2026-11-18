@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `algo uses` (`u`): common real-world uses for every algorithm; `algo u <need>` (e.g. "shortest distance
+  between two zip codes") ranks the algorithms that fit and lists the problems each is the optimal pattern
+  for. Backed by a new required `uses` field on all 38 registry entries (`algo check` enforces it).
 - `algo g -p` / `--print`: print the generated library to stdout instead of writing a file.
 - **Every solved problem is runnable:** `lc-N` targets for all 99 study-list solutions in `generate`, `inputs`,
   `run`, `pipe` and `shapes` (`algo r 875 3,6,7,11 8`, `algo g 2812`). Schemas are derived from each solution's
@@ -21,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `algo shapes` lists all 38 algorithms (was only the 13 with dedicated solvers), noting which problem
+  each runs; `algo sh <word>` filters (`algo sh sort` → topological-sort, cyclic-sort, sorting).
 - `algo g` and `algo i` write to the current directory by default (was the system temp dir);
   `$ALGO_TMP` and `-o DIR` still override it.
 

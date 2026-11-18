@@ -12,7 +12,7 @@ _algo_complete() {
 
   # First argument: the subcommand.
   if [ "$COMP_CWORD" -eq 1 ]; then
-    words="search s problems p generate g inputs i run r shapes sh pipe judge assert targets check verify -h --help"
+    words="search s problems p generate g inputs i run r shapes sh uses u pipe judge assert targets check verify -h --help"
     COMPREPLY=( $(compgen -W "$words" -- "$cur") )
     return 0
   fi
@@ -62,6 +62,7 @@ _algo_complete() {
     search|s|generate|g|inputs|i) COMPREPLY=( $(compgen -W "$(_algo_cands algos)" -- "$cur") ) ;;
     pipe)                         COMPREPLY=( $(compgen -W "$(_algo_cands runnable)" -- "$cur") ) ;;
     shapes|sh)                    COMPREPLY=( $(compgen -W "$(_algo_cands runnable)" -- "$cur") ) ;;
+    uses|u)                       COMPREPLY=( $(compgen -W "--top -p -j --json" -- "$cur") ) ;;
     judge)                        COMPREPLY=( $(compgen -W "$(_algo_cands judged)" -- "$cur") ) ;;
     run|r)
       # An algorithm starts the first stage and follows every `then`; otherwise offer `then`.

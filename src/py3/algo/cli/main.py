@@ -10,7 +10,8 @@ Subcommands (full spec in docs/API.md §2):
                    (files go to -o DIR, else $ALGO_TMP, else the current directory)
     run      (r)   run in-process; chain stages with `then`, `_` = previous output
                    (targets: an algorithm, a solver key, or a problem: 875 / lc-875 / "koko")
-    shapes   (sh)  input fields and types per solver (`algo sh 875` for one problem)
+    shapes   (sh)  input fields per algorithm; `algo sh sort` filters, `algo sh 875` = one target
+    uses     (u)   common real-world uses per algorithm; `algo u <need>` -> algorithm + problems
     pipe / assert / judge / targets   JSON in -> JSON out, compare, judge samples
     verify         differential-test the per-problem solutions (algo.leetcode.verify)
     check          cross-validate registry, problems, solvers, schemas and cases
@@ -127,7 +128,9 @@ def load_registry() -> list[Item]:
                 item["identification"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
             elif s.startswith("disqualifiers:"):
                 item["disqualifiers"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
-        for k in ("data_structures", "identification", "disqualifiers"):
+            elif s.startswith("uses:"):
+                item["uses"] = s.split("[", 1)[1].split("]", 1)[0].split(", ")
+        for k in ("data_structures", "identification", "disqualifiers", "uses"):
             if k in item:
                 item[k] = [x for x in item[k] if x]
         items.append(item)
@@ -860,6 +863,7 @@ def cmd_check(_args: argparse.Namespace) -> NoReturn:
     reg = load_registry()
     solved = solved_ids()
     errs = _check_problems(reg, solved) + _check_solvers(reg) + _check_problem_targets()
+    errs += [f"algorithm {i['id']}: no `uses` (algo uses)" for i in reg if not i.get("uses")]
     for e in errs:
         print("ERROR", e, file=sys.stderr)
     print(
@@ -918,25 +922,110 @@ def cmd_complete(args: argparse.Namespace) -> None:
             print(c)
 
 
-def cmd_shapes(args: argparse.Namespace) -> None:
-    """Print each solver's input fields and types, or one target's (`algo sh 875`)."""
-    from algo.shorthand import SCHEMAS
+def _shape_detail(item: Item, target: str) -> None:
+    """One target's fields, the problem it runs (if any) and its sample."""
+    fields = " ".join(f"{k}:{v}" for k, v in schema_for(target).items())
+    print(f"{item['id']:<16} {fields}")
+    if target.startswith("lc-") and item["id"] != target:
+        from algo.leetcode import runnable
 
-    if args.query:
-        item, target = pick(" ".join(args.query))
+        t = runnable.targets()[target]
+        print(f"{'':<16} runs: {t.key} {t.title}")
+    print(f"{'':<16} sample: {json.dumps(sample_for(target), default=repr)}")
+
+
+def filter_algorithms(query: str, items: list[Item]) -> list[Item]:
+    """Algorithms whose id, name or category contain query; else whose tags mention it."""
+    q = _norm(query).strip()
+    strong = [i for i in items if any(q in _norm(i.get(f, "")) for f in ("id", "name", "category"))]
+    if strong:
+        return strong
+    tags = ("identification", "data_structures")
+    return [i for i in items if score(q, [t for f in tags for t in i.get(f, [])])[0] > 0]
+
+
+def _shape_rows(items: list[Item]) -> None:
+    """`id  fields  (runs lc-N ...)` for each algorithm; `(no solver yet)` when not runnable."""
+    w = max(len(i["id"]) for i in items)
+    for i in items:
+        found = resolve_target(i["id"])
+        target = found[1] if found else None
+        if target is None:
+            print(f"{i['id']:<{w}}  (no solver yet)")
+            continue
         fields = " ".join(f"{k}:{v}" for k, v in schema_for(target).items())
-        print(f"{item['id']:<16} {fields}")
-        if target.startswith("lc-") and item["id"] != target:
-            from algo.leetcode import runnable
+        runs = f"   (runs {target})" if target.startswith("lc-") else ""
+        print(f"{i['id']:<{w}}  {fields}{runs}")
 
-            t = runnable.targets()[target]
-            print(f"{'':<16} runs: {t.key} {t.title}")
-        print(f"{'':<16} sample: {json.dumps(sample_for(target), default=repr)}")
+
+def cmd_shapes(args: argparse.Namespace) -> None:
+    """Input fields per algorithm: all, those matching a word (`sort`), or one target (`875`)."""
+    reg = load_registry()
+    if not args.query:
+        _shape_rows(reg)
+        print(f"(+ {len(solved_ids())} problem targets lc-N: algo sh <problem>, e.g. algo sh 875)")
         return
-    for t, sc in SCHEMAS.items():
-        item = next((i for i in load_registry() if target_of(i) == t), {})
-        print(f"{item.get('id', t):<16} " + " ".join(f"{k}:{v}" for k, v in sc.items()))
-    print(f"(+ {len(solved_ids())} problem targets lc-N: algo sh <problem>, e.g. algo sh 875)")
+    q = " ".join(args.query)
+    if q in SOLVERS or _problem_id(q) is not None:
+        _shape_detail(*pick(q))
+        return
+    matches = filter_algorithms(q, reg)
+    if len(matches) == 1:
+        _shape_detail(*pick(matches[0]["id"]))
+    elif matches:
+        _shape_rows(matches)
+    else:  # a problem title such as "koko"
+        _shape_detail(*pick(q))
+
+
+def _wrap(label: str, text: str, indent: int) -> str:
+    import shutil
+    import textwrap
+
+    width = max(60, min(shutil.get_terminal_size((100, 20)).columns, 120))
+    pad = " " * indent
+    return textwrap.fill(
+        text, width, initial_indent=pad + label, subsequent_indent=pad + " " * len(label)
+    )
+
+
+def cmd_uses(args: argparse.Namespace) -> None:
+    """Common uses per algorithm, or the algorithms (and problems) that fit a described need."""
+    from algo.cli import uses
+
+    q = " ".join(args.query)
+    found = uses.search(
+        q, load_registry(), load_problems(), top=args.top, per_algo=args.problems_top
+    )
+    solved = solved_ids()
+    if args.json:
+        out = [
+            {
+                "id": m.algo["id"],
+                "name": m.algo.get("name"),
+                "score": round(m.score, 2),
+                "uses": m.matched,
+                "problems": [
+                    {"id": p["id"], "title": p["title"], "solved": p["id"] in solved}
+                    for p in m.problems
+                ],
+            }
+            for m in found
+        ]
+        print(json.dumps(out, indent=2))
+        return
+    if not found:
+        print(f"no algorithm matches {q!r}  (try other words, or: algo s {q})", file=sys.stderr)
+        raise SystemExit(1)
+    for m in found:
+        print(f"{m.algo['id']}  {m.algo.get('name', '')}")
+        if m.matched:
+            print(_wrap("uses:     ", "; ".join(m.matched), 2))
+        if m.problems:
+            probs = " · ".join(
+                f"{p['id']}{'*' if p['id'] in solved else ''} {p['title']}" for p in m.problems
+            )
+            print(_wrap("problems: ", probs, 2))
 
 
 def cmd_assert(args: argparse.Namespace) -> NoReturn:
@@ -1081,9 +1170,23 @@ def _add_build_commands(sub: Any) -> None:
     co = sub.add_parser("complete", help=argparse.SUPPRESS)
     co.add_argument("kind", choices=["algos", "runnable", "judged", "comparators"])
     co.set_defaults(func=cmd_complete)
-    sh = sub.add_parser("shapes", aliases=["sh"])
-    sh.add_argument("query", nargs="*", help="one algorithm or problem (875, lc-875, koko)")
+    sh = sub.add_parser(
+        "shapes", aliases=["sh"], help="input fields per algorithm (filter: sort, graph)"
+    )
+    sh.add_argument(
+        "query", nargs="*", help="filter word (sort), or one algorithm / problem (875, koko)"
+    )
     sh.set_defaults(func=cmd_shapes)
+    u = sub.add_parser(
+        "uses", aliases=["u"], help="real-world uses per algorithm; describe a need to search"
+    )
+    u.add_argument("query", nargs="*", help="a need, e.g. shortest distance between two zip codes")
+    u.add_argument("--top", type=int, default=5, help="algorithms to show for a query (default 5)")
+    u.add_argument(
+        "-p", dest="problems_top", type=int, default=3, help="problems per algorithm (default 3)"
+    )
+    u.add_argument("-j", "--json", action="store_true")
+    u.set_defaults(func=cmd_uses)
     t = sub.add_parser("targets")
     t.set_defaults(func=cmd_targets)
 

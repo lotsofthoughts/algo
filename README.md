@@ -83,7 +83,8 @@ Five complete walkthroughs (topological sort, Dijkstra, top-k, flood fill, coin-
 | `g` | Write the importable library `<id>.py` (to the cwd); `-p` prints it instead, writing nothing | `.a g dijkstra` · `.a g 2812 -p` |
 | `i` | Write `inputs.py` (to the cwd) that calls the library on your values | `.a i 1,2,5 11 coin-change` |
 | `r` | Run in-process, no files; `then` chains, `_` = previous output | `.a r top-k 5,5,1 1 then coin-change _ 11` |
-| `sh` | Input fields and types per algorithm, or for one target | `.a sh` · `.a sh 875` |
+| `sh` | Input fields and types for every algorithm; a word filters, a problem shows one target | `.a sh` · `.a sh sort` · `.a sh 875` |
+| `u` | Real-world uses per algorithm; describe a need to get the algorithm and its problems | `.a u` · `.a u shortest distance between two zip codes` |
 | `pipe` / `assert` / `judge` | JSON in → JSON out, compare, judge a sample | `.a judge leetcode-322` |
 | `verify` | Differential-test the 99 study-list solutions | `.a verify --fetch` |
 | `check` | Validate registry ↔ problems ↔ solvers ↔ schemas ↔ cases | `.a check` |
