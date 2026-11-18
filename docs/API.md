@@ -67,7 +67,8 @@ a unique prefix such as `koko`) → fuzzy algorithm match. Multi-word names need
 | `generate` (`g`) | Write the algorithm library `<id>.py` (importable; also runnable on its sample). A problem target writes a standalone `lc<N>_<name>.py` with its helpers and node types inlined. `-o DIR` (default `$ALGO_TMP`, else the cwd); `-p` prints the code to stdout and writes nothing. | `.a g bfs` · `.a g 2812` · `.a g bfs -p \| less` |
 | `inputs` (`i`) | Write `inputs.py` (same output dir as `generate`) that imports the library and calls `solve(...)`. Generates the library first if missing (never overwrites). Target = last bare word or `-a` (a bare number at the end is a value: use `lc-N` or `-a N`). | `.a i 1 2 add` · `.a i -a 875 3,6,7,11 8` |
 | `run` (`r`) | Run in-process with shorthand input, no files. Chain stages with `then`; `_` = previous output. A solver error prints one line and exits 1. | `.a r topo 4 1-0,2-0 then binary-search _ target=2` · `.a r 22 3 then 14 _` |
-| `shapes` (`sh`) | Show each solver's input fields and types; with a name, one target's fields, sample, and which problem it runs. | `.a sh` · `.a sh 875` |
+| `shapes` (`sh`) | Input fields and types for **every algorithm** (`(runs lc-N)` when it runs a problem's solution; `(no solver yet)` otherwise). A word filters by id/name/category (`sort` → topological-sort, cyclic-sort, sorting), falling back to identification tags; a problem number, solver key or a single match shows that target's fields, sample and the problem it runs. | `.a sh` · `.a sh sort` · `.a sh 875` |
+| `uses` (`u`) | **Real-world uses → algorithm + problems.** No query: every algorithm with its `uses` and its top problems. With a described need, ranks algorithms (default top 5, weak matches dropped) and shows the matching uses and the problems that algorithm is the primary (optimal) pattern for. Words are stemmed, a few synonyms fold together (zip code/city/address → location; distance/route/path → route; smallest/minimum → min) and rare words weigh more. `--top N`, `-p N` problems each, `-j` JSON. | `.a u` · `.a u shortest distance between two zip codes` · `.a u chess board` |
 | `pipe` | JSON in → solver → JSON out, for pipelines. Input from `--input FILE`, piped stdin, or the sample case when stdin is a terminal. | `.a pipe leetcode-347 -i in.json \| .a assert --expected out.json --comparator unordered-array` |
 | `judge` | Run a target's sample through its solver and compare to the expected file. | `.a judge leetcode-200` |
 | `assert` | Compare JSON from stdin/`--actual` against `--expected` with a comparator. | see `pipe` |
@@ -100,6 +101,7 @@ algorithms:
     leetcode: { id: 1, title: Two Sum }
     data_structures: [hash map, set, array]
     identification: [pair sum, complement lookup, frequency count, group by key, duplicates, membership check]
+    uses: [find two numbers that add up to a target, deduplicate records by key, count word frequencies]
     disqualifiers: [need sorted order, memory constrained, need range queries]
     comparator: exact
 ```
@@ -112,6 +114,7 @@ algorithms:
 | `leetcode` | no | Representative problem. **Determines the solver key** (`leetcode-<id>`). Omit for non-LeetCode utilities. |
 | `data_structures` | yes | Weak search signal (`s --id`). |
 | `identification` | yes | **The most important field.** Phrases that appear in problem statements / constraints that signal this algorithm. Drives `s --id "..."`. |
+| `uses` | yes | Everyday tasks and real-world problems it solves ("driving directions between two zip codes", "place n queens on a chess board"). Drives `algo uses`; `algo check` fails on an entry without it. |
 | `disqualifiers` | yes | Phrases that rule it out. Drives `s --disqualifier "..."`. |
 | `comparator` | yes | Documentation of the expected comparator. *Not read by code today* — the judged comparator lives in `TARGETS` (§5). |
 
@@ -127,6 +130,10 @@ can ship in the offline installer):
 whole-phrase hit counts double. Write 4–8 phrases in the words a problem statement would use ("minimum
 minutes", "no adjacent", "k-th largest"), not abstract descriptions. Put the things that make you
 reject it in `disqualifiers`.
+
+**Writing good `uses`.** Describe the task the way someone would ask for it, not the technique: "find the
+smallest missing positive integer", "rate limit requests per minute". 5–8 concrete phrases; the
+problems the algorithm is primary for (§4) add their titles, keywords and `uses` automatically.
 
 **To add an algorithm:** append an entry → add the problems that use it to `problems.yml` (§4) → `algo check`.
 It is now searchable (`.a s`, `.a p`). It becomes *runnable* only once it has a solver (§5) and a schema (§6).
