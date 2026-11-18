@@ -11,6 +11,7 @@ positionally, or by name with ``key=value``. Value sugar by type:
   strs     eat,tea,tan                            (list of strings)
   floats   0.5,0.5,0.2                            (list of numbers)
   ll       2,4,3   | 1..5 | rand:...              (ints, passed as a linked list)
+  lls      1,4,5/1,3,4/2,6                        (list of linked lists; empty row = empty list)
   tree     3,9,20,null,null,15,7                  (level order; null = no node)
   any      5 | abc | [1, 2] | [a: [1, 2], b: [3]]   (literal syntax, see below)
   edges    1-2 1-3 2-3 | 1-2-3-4 (path) | rand:6:8 (nodes, edges; acyclic u>v)
@@ -243,6 +244,10 @@ def _parse_tree(tok: str, _parts: list[str], _rng: random.Random, _alpha: str) -
     return [_scalar(x) for x in tok.split(",") if x]
 
 
+def _parse_lls(tok: str, _parts: list[str], _rng: random.Random, _alpha: str) -> object:
+    return [[int(x) for x in row.split(",") if x] for row in tok.split("/")]
+
+
 def parse_value(kind: str, tok: str, rng: random.Random, alpha: str = "01") -> object:
     """Parse one token as `kind` (see the module docstring for each type's sugar)."""
     if kind == "any" or tok[:1] in ("[", "{", "'", '"'):
@@ -258,6 +263,7 @@ def parse_value(kind: str, tok: str, rng: random.Random, alpha: str = "01") -> o
     parsers = {
         "ints": _parse_ints,
         "ll": _parse_ints,
+        "lls": _parse_lls,
         "str": _parse_str,
         "strs": _parse_strs,
         "floats": _parse_floats,

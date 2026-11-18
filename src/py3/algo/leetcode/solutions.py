@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any
 from algo.leetcode.structures import ListNode, TreeNode
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
 MOD = 10**9 + 7
 
@@ -198,6 +198,23 @@ def lc15_three_sum(nums: list[int]) -> list[list[int]]:
                     j += 1
                 k -= 1
     return out
+
+
+def lc88_merge(nums1: list[int], m: int, nums2: list[int], n: int) -> None:
+    """two-pointers: fill nums1 from the back with the larger tail. O(m + n), O(1) extra space.
+
+    Modifies nums1 in place (LeetCode's contract); writing from the end never overwrites an
+    unread nums1 value, because the write index m + n - 1 is always >= the read index m - 1.
+    """
+    i, j, k = m - 1, n - 1, m + n - 1
+    while j >= 0:
+        if i >= 0 and nums1[i] > nums2[j]:
+            nums1[k] = nums1[i]
+            i -= 1
+        else:
+            nums1[k] = nums2[j]
+            j -= 1
+        k -= 1
 
 
 def lc11_max_area(height: list[int]) -> int:
@@ -656,6 +673,24 @@ def lc21_merge_two_lists(list1: ListNode | None, list2: ListNode | None) -> List
             tail.next, list2 = list2, list2.next
         tail = tail.next
     tail.next = list1 or list2
+    return dummy.next
+
+
+def walk(node: ListNode | None) -> Iterator[int]:
+    """Yield a linked list's values in order."""
+    while node:
+        yield node.val
+        node = node.next
+
+
+def lc23_merge_k_lists(lists: list[ListNode | None]) -> ListNode | None:
+    """heap-topk: heapq.merge keeps a k-sized heap of list heads. O(N log k) for N nodes total.
+
+    Builds new nodes from the merged values (O(N) output space; O(k) for the heap itself).
+    """
+    dummy = tail = ListNode()
+    for val in heapq.merge(*map(walk, lists)):
+        tail.next = tail = ListNode(val)
     return dummy.next
 
 

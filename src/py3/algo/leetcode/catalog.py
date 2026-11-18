@@ -25,8 +25,9 @@ Check = Callable[[Args, Any, Any], bool]
 class Spec:
     """How to exercise one problem."""
 
-    kinds: tuple[str, ...] = ()  # per-arg conversion: "ll", "tree", "intervals" ("" = as is)
-    out: str | Check = "exact"  # exact | unordered | nested | float | ll | callable(args, a, b)
+    kinds: tuple[str, ...] = ()  # per-arg conversion: ll, lls, tree, intervals ("" = as is)
+    # exact | unordered | nested | float | ll | arg0 (in place: compare args[0]) | callable
+    out: str | Check = "exact"
     cases: list[Args] = field(default_factory=list)
     expect: list[Any] = field(default_factory=list)  # expected outputs for the first cases
     gen: Callable[[random.Random], Args] | None = None
@@ -612,6 +613,12 @@ def gen_same_tree(r: random.Random) -> Args:
     return (t, t if r.random() < 0.5 else tree(r, 3, (0, 1)))  # noqa: PLR2004
 
 
+def gen_merge_sorted_array(r: random.Random) -> Args:
+    """nums1 = m sorted values + n zero slots; nums2 = n sorted values."""
+    a, b = sorted_ints(r), sorted_ints(r)
+    return (a + [0] * len(b), len(a), b, len(b))
+
+
 def gen_single_number(r: random.Random) -> Args:
     """Every value twice except the first."""
     xs = r.sample(range(-20, 20), r.randint(1, 5))
@@ -760,6 +767,14 @@ SPECS: dict[int, Spec] = {
         expect=[["((()))", "(()())", "(())()", "()(())", "()()()"], ["()"]],
         gen=lambda r: (r.randint(1, 6),),
     ),
+    23: Spec(
+        kinds=("lls",),
+        out="ll",
+        cases=[([[1, 4, 5], [1, 3, 4], [2, 6]],), ([],), ([[]],)],
+        expect=[[1, 1, 2, 3, 4, 4, 5, 6], [], []],
+        gen=lambda r: ([sorted_ints(r) for _ in range(r.randint(0, 5))],),
+        oracle=lambda lists: sorted(v for lst in lists for v in lst),
+    ),
     30: Spec(
         out="unordered",
         cases=[
@@ -833,6 +848,13 @@ SPECS: dict[int, Spec] = {
         cases=[([2, 1, 5, 6, 2, 3],), ([2, 4],)],
         expect=[10, 4],
         gen=lambda r: (ints(r, (1, 10), (0, 8)),),
+    ),
+    88: Spec(
+        out="arg0",
+        cases=[([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3), ([1], 1, [], 0), ([0], 0, [1], 1)],
+        expect=[[1, 2, 2, 3, 5, 6], [1], [1]],
+        gen=gen_merge_sorted_array,
+        oracle=lambda nums1, m, nums2, n: sorted(nums1[:m] + nums2[:n]),
     ),
     100: Spec(
         kinds=("tree", "tree"),
